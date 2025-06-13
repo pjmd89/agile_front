@@ -98,23 +98,31 @@ class ModelGenerator {
         final buffer = StringBuffer();
         // Recolectar tipos personalizados usados en los campos, solo OBJECT o INPUT_OBJECT
         final Set<String> customTypes = {};
+        final Set<String> enumTypes = {};
         for (final field in fields) {
           final fieldType = field['type'];
           final typeName = _extractCustomTypeName(fieldType);
-          // Solo importar si es OBJECT o INPUT_OBJECT (no ENUM)
           if (typeName != null && typeName != className) {
             final relatedType = types.firstWhere(
               (t) => t['name'] == typeName,
               orElse: () => null,
             );
-            if (relatedType != null && (relatedType['kind'] == 'OBJECT' || relatedType['kind'] == 'INPUT_OBJECT')) {
-              customTypes.add(typeName);
+            if (relatedType != null) {
+              if (relatedType['kind'] == 'OBJECT' || relatedType['kind'] == 'INPUT_OBJECT') {
+                customTypes.add(typeName);
+              } else if (relatedType['kind'] == 'ENUM') {
+                enumTypes.add(typeName);
+              }
             }
           }
         }
         // Importar modelos relacionados
         for (final typeName in customTypes) {
           buffer.writeln('import "../types/${typeName.toLowerCase()}_model.dart";');
+        }
+        // Importar enums relacionados
+        for (final enumName in enumTypes) {
+          buffer.writeln('import "../enums/${enumName.toLowerCase()}_enum.dart";');
         }
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_model.g.dart";');
