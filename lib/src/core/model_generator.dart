@@ -4,6 +4,15 @@ class ModelGenerator {
   final String libRoot;
   ModelGenerator({this.libRoot = 'lib'});
 
+  String _dartFieldName(String name) {
+    // Convierte nombres inválidos a nombres válidos en Dart
+    if (name.startsWith('_')) {
+      return name.replaceFirst('_', '');
+    }
+    // Puedes agregar más reglas aquí si lo necesitas
+    return name;
+  }
+
   void generateModelsFromTypes(List types) {
     print('Generando modelos a partir de los tipos del esquema...');
     for (final type in types) {
@@ -11,19 +20,28 @@ class ModelGenerator {
         final className = type['name'];
         final fields = type['fields'] ?? [];
         final buffer = StringBuffer();
+        buffer.writeln('import "package:json_annotation/json_annotation.dart";');
+        buffer.writeln('part "${className.toLowerCase()}_model.g.dart";');
+        buffer.writeln('@JsonSerializable()');
         buffer.writeln('class $className {');
         for (final field in fields) {
           final fieldName = field['name'];
-          buffer.writeln('  final String $fieldName;');
+          final dartField = _dartFieldName(fieldName);
+          if (fieldName != dartField) {
+            buffer.writeln('  @JsonKey(name: "$fieldName")');
+          }
+          buffer.writeln('  final String $dartField;');
         }
         buffer.writeln('  $className({');
         for (final field in fields) {
-          buffer.writeln('    required this.${field['name']},');
+          final dartField = _dartFieldName(field['name']);
+          buffer.writeln('    this.$dartField,');
         }
         buffer.writeln('  });');
+        buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _${className}FromJson(json);');
+        buffer.writeln('  Map<String, dynamic> toJson() => _${className}ToJson(this);');
         buffer.writeln('}');
-        final outPath =
-            '$libRoot/src/modules/${className.toLowerCase()}/data/models/${className.toLowerCase()}_model.dart';
+        final outPath = '$libRoot/src/modules/${className.toLowerCase()}/data/models/${className.toLowerCase()}_model.dart';
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
         outFile.writeAsStringSync(buffer.toString());
@@ -38,8 +56,7 @@ class ModelGenerator {
           buffer.writeln('  ${value['name']},');
         }
         buffer.writeln('}');
-        final outPath =
-            '$libRoot/src/modules/${enumName.toLowerCase()}/data/models/${enumName.toLowerCase()}_enum.dart';
+        final outPath = '$libRoot/src/modules/${enumName.toLowerCase()}/data/models/${enumName.toLowerCase()}_enum.dart';
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
         outFile.writeAsStringSync(buffer.toString());
