@@ -120,8 +120,8 @@ class ModelGenerator {
           }
           // Mapeo de tipos GraphQL a Dart
           String dartType = 'String?';
+          String? defaultValueCode;
           if (field['type'] != null) {
-            // Si es ENUM, usar el nombre correcto del enum (con sufijo Enum)
             final fieldType = field['type'];
             String? enumTypeName;
             dynamic t = fieldType;
@@ -139,8 +139,33 @@ class ModelGenerator {
                 dartType = dartType + '?';
               }
             }
+            // Valor por defecto para primitivos
+            dynamic t2 = field['type'];
+            String? scalarName;
+            while (t2 is Map && (t2['kind'] == 'NON_NULL' || t2['kind'] == 'LIST')) {
+              t2 = t2['ofType'];
+            }
+            if (t2 is Map && t2['kind'] == 'SCALAR') {
+              scalarName = t2['name'];
+              if (scalarName == 'String') {
+                defaultValueCode = "''";
+              } else if (scalarName == 'Int' || scalarName == 'Float') {
+                defaultValueCode = '0';
+                if (scalarName == 'Float') defaultValueCode = '0.0';
+              } else if (scalarName == 'Boolean') {
+                defaultValueCode = 'false';
+              }
+            } else if (t2 is Map && t2['kind'] == 'LIST') {
+              defaultValueCode = 'const []';
+            }
           }
-          buffer.writeln('  final $dartType $dartField;');
+          if (defaultValueCode != null && dartType.endsWith('?')) {
+            // Si el tipo es nullable, pero queremos valor por defecto, lo hacemos no nullable
+            dartType = dartType.replaceAll('?', '');
+            buffer.writeln('  final $dartType $dartField;');
+          } else {
+            buffer.writeln('  final $dartType $dartField;');
+          }
         }
         buffer.writeln('  $className({');
         for (final field in fields) {
@@ -148,7 +173,32 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          buffer.writeln('    this.$dartField,');
+          // Valor por defecto para primitivos
+          final fieldType = field['type'];
+          String? defaultValueCode;
+          dynamic t2 = fieldType;
+          String? scalarName;
+          while (t2 is Map && (t2['kind'] == 'NON_NULL' || t2['kind'] == 'LIST')) {
+            t2 = t2['ofType'];
+          }
+          if (t2 is Map && t2['kind'] == 'SCALAR') {
+            scalarName = t2['name'];
+            if (scalarName == 'String') {
+              defaultValueCode = "''";
+            } else if (scalarName == 'Int' || scalarName == 'Float') {
+              defaultValueCode = '0';
+              if (scalarName == 'Float') defaultValueCode = '0.0';
+            } else if (scalarName == 'Boolean') {
+              defaultValueCode = 'false';
+            }
+          } else if (t2 is Map && t2['kind'] == 'LIST') {
+            defaultValueCode = 'const []';
+          }
+          if (defaultValueCode != null) {
+            buffer.writeln('    this.$dartField = $defaultValueCode,');
+          } else {
+            buffer.writeln('    this.$dartField,');
+          }
         }
         buffer.writeln('  });');
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
