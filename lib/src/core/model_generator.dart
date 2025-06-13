@@ -118,11 +118,12 @@ class ModelGenerator {
         }
         // Importar modelos relacionados
         for (final typeName in customTypes) {
-          buffer.writeln('import "../types/${typeName.toLowerCase()}_model.dart";');
+          buffer.writeln('import "../${typeName.toLowerCase()}/' +
+            '${typeName.toLowerCase()}_model.dart";');
         }
         // Importar enums relacionados
         for (final enumName in enumTypes) {
-          buffer.writeln('import "../enums/${enumName.toLowerCase()}_enum.dart";');
+          buffer.writeln('import "../../enums/${enumName.toLowerCase()}_enum.dart";');
         }
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_model.g.dart";');
@@ -174,7 +175,7 @@ class ModelGenerator {
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
         buffer.writeln('}');
-        final outPath = '$libRoot/src/models/types/${className.toLowerCase()}_model.dart';
+        final outPath = '$libRoot/src/models/types/${className.toLowerCase()}/${className.toLowerCase()}_model.dart';
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
         outFile.writeAsStringSync(buffer.toString());
@@ -212,6 +213,23 @@ class ModelGenerator {
         if (fields.isEmpty) {
           // No generar clase vacía
           continue;
+        }
+        // Buscar a qué type OBJECT asociar este input (por convención)
+        // Ejemplo: CreateUserInput, UpdateUserInput, UserInput => User
+        String? parentType;
+        for (final objectType in types.where((t) => t['kind'] == 'OBJECT' && !t['name'].startsWith('__'))) {
+          final objectName = objectType['name'];
+          if (className.toLowerCase().contains(objectName.toLowerCase())) {
+            parentType = objectName;
+            break;
+          }
+        }
+        // Si no se encuentra, usar carpeta general de inputs
+        String inputOutPath;
+        if (parentType != null) {
+          inputOutPath = '$libRoot/src/models/types/${parentType.toLowerCase()}/inputs/${className.toLowerCase()}_input.dart';
+        } else {
+          inputOutPath = '$libRoot/src/models/inputs/${className.toLowerCase()}_input.dart';
         }
         final buffer = StringBuffer();
         buffer.writeln('import "package:flutter/foundation.dart";');
@@ -256,11 +274,10 @@ class ModelGenerator {
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
         buffer.writeln('}');
-        final outPath = '$libRoot/src/models/inputs/${className.toLowerCase()}_input.dart';
-        final outFile = File(outPath);
+        final outFile = File(inputOutPath);
         outFile.createSync(recursive: true);
         outFile.writeAsStringSync(buffer.toString());
-        print('  + Input generado: $outPath');
+        print('  + Input generado: $inputOutPath');
       }
     }
   }
