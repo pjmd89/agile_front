@@ -107,7 +107,7 @@ class ModelGenerator {
         }
         // Importar modelos relacionados
         for (final typeName in customTypes) {
-          buffer.writeln('import "../${typeName.toLowerCase()}_model.dart";');
+          buffer.writeln('import "../types/${typeName.toLowerCase()}_model.dart";');
         }
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_model.g.dart";');
@@ -146,7 +146,7 @@ class ModelGenerator {
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
         buffer.writeln('}');
-        final outPath = '$libRoot/src/modules/${className.toLowerCase()}/data/models/${className.toLowerCase()}_model.dart';
+        final outPath = '$libRoot/src/models/types/${className.toLowerCase()}_model.dart';
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
         outFile.writeAsStringSync(buffer.toString());
@@ -169,7 +169,7 @@ class ModelGenerator {
           buffer.writeln('  $dartName,');
         }
         buffer.writeln('}');
-        final outPath = '$libRoot/src/modules/${enumName.toLowerCase()}/data/enums/${enumName.toLowerCase()}_enum.dart';
+        final outPath = '$libRoot/src/models/enums/${enumName.toLowerCase()}_enum.dart';
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
         outFile.writeAsStringSync(buffer.toString());
@@ -224,7 +224,7 @@ class ModelGenerator {
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
         buffer.writeln('}');
-        final outPath = '$libRoot/src/modules/${className.toLowerCase()}/data/inputs/${className.toLowerCase()}_input.dart';
+        final outPath = '$libRoot/src/models/inputs/${className.toLowerCase()}_input.dart';
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
         outFile.writeAsStringSync(buffer.toString());
