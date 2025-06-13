@@ -35,7 +35,7 @@ void main(List<String> arguments) {
     case 'init':
       print('Inicializando estructura base del proyecto...');
       _createBaseStructure(libRoot);
-      _copyBaseTemplates(libRoot);
+      //_copyBaseTemplates(libRoot);
       break;
     case 'generate':
       print(
