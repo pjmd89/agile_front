@@ -25,6 +25,64 @@ class ModelGenerator {
 
   bool _isReserved(String name) => _reservedWords.contains(name);
 
+  // Mapea tipos GraphQL a Dart
+  String _mapGraphQLTypeToDart(Map type) {
+    // Desenrollar listas y nullability
+    bool isList = false;
+    bool isNonNull = false;
+    var t = type;
+    while (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST') {
+      if (t['kind'] == 'NON_NULL') {
+        isNonNull = true;
+        t = t['ofType'];
+      } else if (t['kind'] == 'LIST') {
+        isList = true;
+        t = t['ofType'];
+      }
+    }
+    String baseType;
+    switch (t['kind']) {
+      case 'SCALAR':
+        switch (t['name']) {
+          case 'String':
+            baseType = 'String';
+            break;
+          case 'Int':
+            baseType = 'int';
+            break;
+          case 'Float':
+            baseType = 'double';
+            break;
+          case 'Boolean':
+            baseType = 'bool';
+            break;
+          case 'ID':
+            baseType = 'String';
+            break;
+          default:
+            baseType = 'String';
+        }
+        break;
+      case 'ENUM':
+        baseType = t['name'];
+        break;
+      case 'OBJECT':
+      case 'INPUT_OBJECT':
+        baseType = t['name'];
+        break;
+      default:
+        baseType = 'String';
+    }
+    String typeStr = baseType;
+    if (isList) {
+      typeStr = 'List<$baseType>';
+    }
+    if (!isNonNull) {
+      typeStr += '?';
+    }
+    return typeStr;
+  }
+
   void generateModelsFromTypes(List types) {
     print('Generando modelos a partir de los tipos del esquema...');
     for (final type in types) {
@@ -46,7 +104,12 @@ class ModelGenerator {
           if (fieldName != dartField) {
             buffer.writeln('  @JsonKey(name: "$fieldName")');
           }
-          buffer.writeln('  final String? $dartField;');
+          // Mapeo de tipos GraphQL a Dart
+          String dartType = 'String?';
+          if (field['type'] != null) {
+            dartType = _mapGraphQLTypeToDart(field['type']);
+          }
+          buffer.writeln('  final $dartType $dartField;');
         }
         buffer.writeln('  $className({');
         for (final field in fields) {
