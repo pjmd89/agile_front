@@ -96,6 +96,19 @@ class ModelGenerator {
         final className = type['name'];
         final fields = type['fields'] ?? [];
         final buffer = StringBuffer();
+        // Recolectar tipos personalizados usados en los campos
+        final Set<String> customTypes = {};
+        for (final field in fields) {
+          final fieldType = field['type'];
+          final typeName = _extractCustomTypeName(fieldType);
+          if (typeName != null && typeName != className) {
+            customTypes.add(typeName);
+          }
+        }
+        // Importar modelos relacionados
+        for (final typeName in customTypes) {
+          buffer.writeln('import "../${typeName.toLowerCase()}_model.dart";');
+        }
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_model.g.dart";');
         buffer.writeln('@JsonSerializable()');
@@ -215,4 +228,16 @@ class ModelGenerator {
       }
     }
   }
+
+// Función auxiliar para extraer el nombre de tipo personalizado
+String? _extractCustomTypeName(Map? type) {
+  if (type == null) return null;
+  dynamic t = type;
+  while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
+    t = t['ofType'];
+  }
+  if (t is Map && (t['kind'] == 'OBJECT' || t['kind'] == 'INPUT_OBJECT' || t['kind'] == 'ENUM')) {
+    return t['name'];
+  }
+  return null;
 }
