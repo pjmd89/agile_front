@@ -55,7 +55,23 @@ class ModelGenerator {
         final buffer = StringBuffer();
         buffer.writeln('enum $enumName {');
         for (final value in values) {
-          buffer.writeln('  ${value['name']},');
+          final originalName = value['name'];
+          // Palabras reservadas de Dart
+          const reservedWords = [
+            'assert', 'break', 'case', 'catch', 'class', 'const', 'continue', 'default',
+            'do', 'else', 'enum', 'extends', 'false', 'final', 'finally', 'for', 'if',
+            'in', 'is', 'new', 'null', 'rethrow', 'return', 'super', 'switch', 'this',
+            'throw', 'true', 'try', 'var', 'void', 'while', 'with', 'abstract', 'as',
+            'covariant', 'deferred', 'dynamic', 'export', 'external', 'factory', 'Function',
+            'get', 'implements', 'import', 'interface', 'late', 'library', 'mixin', 'operator',
+            'part', 'required', 'set', 'static', 'typedef', 'await', 'yield'
+          ];
+          var dartName = originalName;
+          if (reservedWords.contains(originalName)) {
+            dartName = '${originalName}_';
+            buffer.writeln('  // "$originalName" es palabra reservada, renombrado a "$dartName"');
+          }
+          buffer.writeln('  $dartName,');
         }
         buffer.writeln('}');
         final outPath = '$libRoot/src/modules/${enumName.toLowerCase()}/data/enums/${enumName.toLowerCase()}_enum.dart';
