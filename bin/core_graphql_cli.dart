@@ -58,13 +58,18 @@ void main(List<String> arguments) {
 
 void _createBaseStructure(String libRoot) {
   final directories = [
-    '$libRoot/src/core/themes',
-    '$libRoot/src/core/templates',
-    '$libRoot/src/core/i18n',
-    '$libRoot/src/core/providers',
-    '$libRoot/src/core',
-    '$libRoot/src/data',
-    '$libRoot/src/modules',
+    '$libRoot/src/domain/entities',
+    '$libRoot/src/domain/usecases',
+    '$libRoot/src/infraestructure/services',
+    '$libRoot/src/infraestructure/persistence',
+    '$libRoot/src/infraestructure/utils',
+    '$libRoot/src/presentation/core/themes',
+    '$libRoot/src/presentation/core/templates',
+    '$libRoot/src/presentation/core/navigation',
+    '$libRoot/src/presentation/pages',
+    '$libRoot/src/presentation/widgets',
+    '$libRoot/src/presentation/providers',
+    '$libRoot/src/i18n',
     'test',
   ];
 
