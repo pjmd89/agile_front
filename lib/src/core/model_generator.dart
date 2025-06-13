@@ -228,6 +228,7 @@ class ModelGenerator {
       }
     }
   }
+}
 
 // Función auxiliar para extraer el nombre de tipo personalizado
 String? _extractCustomTypeName(Map? type) {
