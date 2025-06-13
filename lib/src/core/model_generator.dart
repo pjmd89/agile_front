@@ -30,7 +30,7 @@ class ModelGenerator {
           if (fieldName != dartField) {
             buffer.writeln('  @JsonKey(name: "$fieldName")');
           }
-          buffer.writeln('  final String $dartField;');
+          buffer.writeln('  final String? $dartField;');
         }
         buffer.writeln('  $className({');
         for (final field in fields) {
