@@ -92,17 +92,24 @@ class ModelGenerator {
   void generateModelsFromTypes(List types) {
     print('Generando modelos a partir de los tipos del esquema...');
     for (final type in types) {
-      if ((type['kind'] == 'OBJECT' || type['kind'] == 'ENUM') && !type['name'].startsWith('__')) {
+      if (type['kind'] == 'OBJECT' && !type['name'].startsWith('__')) {
         final className = type['name'];
         final fields = type['fields'] ?? [];
         final buffer = StringBuffer();
-        // Recolectar tipos personalizados usados en los campos
+        // Recolectar tipos personalizados usados en los campos, solo OBJECT o INPUT_OBJECT
         final Set<String> customTypes = {};
         for (final field in fields) {
           final fieldType = field['type'];
           final typeName = _extractCustomTypeName(fieldType);
+          // Solo importar si es OBJECT o INPUT_OBJECT (no ENUM)
           if (typeName != null && typeName != className) {
-            customTypes.add(typeName);
+            final relatedType = types.firstWhere(
+              (t) => t['name'] == typeName,
+              orElse: () => null,
+            );
+            if (relatedType != null && (relatedType['kind'] == 'OBJECT' || relatedType['kind'] == 'INPUT_OBJECT')) {
+              customTypes.add(typeName);
+            }
           }
         }
         // Importar modelos relacionados
@@ -154,7 +161,7 @@ class ModelGenerator {
       }
     }
     for (final type in types) {
-      if (type['kind'] == 'ENUM') {
+      if (type['kind'] == 'ENUM' && !type['name'].startsWith('__')) {
         final enumName = type['name'];
         final values = type['enumValues'] ?? [];
         final buffer = StringBuffer();
