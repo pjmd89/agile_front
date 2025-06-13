@@ -43,7 +43,15 @@ class ModelGenerator {
       }
     }
     String baseType;
-    if (t is! Map) {
+    if (isList) {
+      // Si es lista, mapear el tipo interno recursivamente
+      String innerType = _mapGraphQLTypeToDart(t);
+      // Quitar el '?' final del tipo interno para listas
+      if (innerType.endsWith('?')) {
+        innerType = innerType.substring(0, innerType.length - 1);
+      }
+      baseType = 'List<$innerType>';
+    } else if (t is! Map) {
       baseType = 'String';
     } else {
       switch (t['kind']) {
@@ -80,9 +88,6 @@ class ModelGenerator {
       }
     }
     String typeStr = baseType;
-    if (isList) {
-      typeStr = 'List<$baseType>';
-    }
     if (!isNonNull) {
       typeStr += '?';
     }
