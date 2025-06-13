@@ -5,7 +5,65 @@ class GraphQLIntrospectionService {
   static const String introspectionQuery = '''
     query IntrospectionQuery {
       __schema {
-        types { name kind fields { name type { name kind ofType { name kind } } } inputFields { name type { name kind ofType { name kind } } } enumValues { name } }
+        types {
+          name
+          kind
+          fields {
+            name
+            type {
+              kind
+              name
+              ofType {
+                kind
+                name
+                ofType {
+                  kind
+                  name
+                  ofType {
+                    kind
+                    name
+                    ofType {
+                      kind
+                      name
+                      ofType {
+                        kind
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          inputFields {
+            name
+            type {
+              kind
+              name
+              ofType {
+                kind
+                name
+                ofType {
+                  kind
+                  name
+                  ofType {
+                    kind
+                    name
+                    ofType {
+                      kind
+                      name
+                      ofType {
+                        kind
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          enumValues { name }
+        }
       }
     }
   ''';

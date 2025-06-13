@@ -227,14 +227,9 @@ class ModelGenerator {
           if (fieldName != dartField) {
             buffer.writeln('  @JsonKey(name: "$fieldName")');
           }
-          // Usar el tipo correcto para el campo
-          String dartType = _mapGraphQLTypeToDart(field['type']);
-          if (!dartType.trim().endsWith('?')) {
-            dartType = dartType + '?';
-          }
-          buffer.writeln('  $dartType _${dartField};');
-          buffer.writeln('  $dartType get $dartField => _${dartField};');
-          buffer.writeln('  set $dartField($dartType value) {');
+          buffer.writeln('  String? _${dartField};');
+          buffer.writeln('  String? get $dartField => _${dartField};');
+          buffer.writeln('  set $dartField(String? value) {');
           buffer.writeln('    _${dartField} = value;');
           buffer.writeln('    notifyListeners();');
           buffer.writeln('  }');
@@ -245,11 +240,7 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          String dartType = _mapGraphQLTypeToDart(field['type']);
-          if (!dartType.trim().endsWith('?')) {
-            dartType = dartType + '?';
-          }
-          buffer.writeln('    $dartType $dartField,');
+          buffer.writeln('    String? $dartField,');
         }
         buffer.writeln('  }) {');
         for (final field in fields) {
@@ -276,10 +267,16 @@ class ModelGenerator {
 String? _extractCustomTypeName(Map? type) {
   if (type == null) return null;
   dynamic t = type;
-  while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
-    t = t['ofType'];
+  while (t is Map) {
+    if (t['kind'] == 'LIST' && t['ofType'] != null) {
+      t = t['ofType'];
+    } else if (t['kind'] == 'NON_NULL' && t['ofType'] != null) {
+      t = t['ofType'];
+    } else {
+      break;
+    }
   }
-  if (t is Map && (t['kind'] == 'OBJECT' || t['kind'] == 'INPUT_OBJECT' || t['kind'] == 'ENUM')) {
+  if (t is Map && t.containsKey('name') && (t['kind'] == 'OBJECT' || t['kind'] == 'INPUT_OBJECT' || t['kind'] == 'ENUM')) {
     return t['name'];
   }
   return null;
