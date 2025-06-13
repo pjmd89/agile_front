@@ -47,6 +47,8 @@ class ModelGenerator {
         outFile.writeAsStringSync(buffer.toString());
         print('  + Modelo generado: $outPath');
       }
+    }
+    for (final type in types) {
       if (type['kind'] == 'ENUM') {
         final enumName = type['name'];
         final values = type['enumValues'] ?? [];
@@ -56,7 +58,7 @@ class ModelGenerator {
           buffer.writeln('  ${value['name']},');
         }
         buffer.writeln('}');
-        final outPath = '$libRoot/src/modules/${enumName.toLowerCase()}/data/models/${enumName.toLowerCase()}_enum.dart';
+        final outPath = '$libRoot/src/modules/${enumName.toLowerCase()}/data/enums/${enumName.toLowerCase()}_enum.dart';
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
         outFile.writeAsStringSync(buffer.toString());
