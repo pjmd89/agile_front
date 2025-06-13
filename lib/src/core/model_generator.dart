@@ -51,9 +51,8 @@ class ModelGenerator {
         case 'String':
           return 'String?';
         case 'Int':
-          return 'int?';
         case 'Float':
-          return 'double?';
+          return 'num?';
         case 'Boolean':
           return 'bool?';
         case 'ID':
