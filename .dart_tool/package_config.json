@@ -86,13 +86,13 @@
       "languageVersion": "3.4"
     },
     {
-      "name": "core_graphql_cli",
+      "name": "agile_front",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-05-20T16:27:09.037979Z",
+  "generated": "2025-06-13T03:08:54.039377Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///home/munozp/snap/flutter/common/flutter",
