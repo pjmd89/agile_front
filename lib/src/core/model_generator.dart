@@ -4,6 +4,16 @@ class ModelGenerator {
   final String libRoot;
   ModelGenerator({this.libRoot = 'lib'});
 
+  static const List<String> _reservedWords = [
+    'assert', 'break', 'case', 'catch', 'class', 'const', 'continue', 'default',
+    'do', 'else', 'enum', 'extends', 'false', 'final', 'finally', 'for', 'if',
+    'in', 'is', 'new', 'null', 'rethrow', 'return', 'super', 'switch', 'this',
+    'throw', 'true', 'try', 'var', 'void', 'while', 'with', 'abstract', 'as',
+    'covariant', 'deferred', 'dynamic', 'export', 'external', 'factory', 'Function',
+    'get', 'implements', 'import', 'interface', 'late', 'library', 'mixin', 'operator',
+    'part', 'required', 'set', 'static', 'typedef', 'await', 'yield'
+  ];
+
   String _dartFieldName(String name) {
     // Convierte nombres inválidos a nombres válidos en Dart
     if (name.startsWith('_')) {
@@ -12,6 +22,8 @@ class ModelGenerator {
     // Puedes agregar más reglas aquí si lo necesitas
     return name;
   }
+
+  bool _isReserved(String name) => _reservedWords.contains(name);
 
   void generateModelsFromTypes(List types) {
     print('Generando modelos a partir de los tipos del esquema...');
@@ -26,7 +38,11 @@ class ModelGenerator {
         buffer.writeln('class $className {');
         for (final field in fields) {
           final fieldName = field['name'];
-          final dartField = _dartFieldName(fieldName);
+          var dartField = _dartFieldName(fieldName);
+          if (_isReserved(dartField)) {
+            dartField = '${dartField}_';
+            buffer.writeln('  // "$fieldName" es palabra reservada, renombrado a "$dartField"');
+          }
           if (fieldName != dartField) {
             buffer.writeln('  @JsonKey(name: "$fieldName")');
           }
@@ -34,7 +50,10 @@ class ModelGenerator {
         }
         buffer.writeln('  $className({');
         for (final field in fields) {
-          final dartField = _dartFieldName(field['name']);
+          var dartField = _dartFieldName(field['name']);
+          if (_isReserved(dartField)) {
+            dartField = '${dartField}_';
+          }
           buffer.writeln('    this.$dartField,');
         }
         buffer.writeln('  });');
@@ -56,19 +75,9 @@ class ModelGenerator {
         buffer.writeln('enum $enumName {');
         for (final value in values) {
           final originalName = value['name'];
-          // Palabras reservadas de Dart
-          const reservedWords = [
-            'assert', 'break', 'case', 'catch', 'class', 'const', 'continue', 'default',
-            'do', 'else', 'enum', 'extends', 'false', 'final', 'finally', 'for', 'if',
-            'in', 'is', 'new', 'null', 'rethrow', 'return', 'super', 'switch', 'this',
-            'throw', 'true', 'try', 'var', 'void', 'while', 'with', 'abstract', 'as',
-            'covariant', 'deferred', 'dynamic', 'export', 'external', 'factory', 'Function',
-            'get', 'implements', 'import', 'interface', 'late', 'library', 'mixin', 'operator',
-            'part', 'required', 'set', 'static', 'typedef', 'await', 'yield'
-          ];
           var dartName = originalName;
-          if (reservedWords.contains(originalName)) {
-            dartName = '${originalName}_';
+          if (_isReserved(dartName)) {
+            dartName = '${dartName}_';
             buffer.writeln('  // "$originalName" es palabra reservada, renombrado a "$dartName"');
           }
           buffer.writeln('  $dartName,');
@@ -93,18 +102,8 @@ class ModelGenerator {
         buffer.writeln('class $className {');
         for (final field in fields) {
           final fieldName = field['name'];
-          // Palabras reservadas y caracteres inválidos
-          const reservedWords = [
-            'assert', 'break', 'case', 'catch', 'class', 'const', 'continue', 'default',
-            'do', 'else', 'enum', 'extends', 'false', 'final', 'finally', 'for', 'if',
-            'in', 'is', 'new', 'null', 'rethrow', 'return', 'super', 'switch', 'this',
-            'throw', 'true', 'try', 'var', 'void', 'while', 'with', 'abstract', 'as',
-            'covariant', 'deferred', 'dynamic', 'export', 'external', 'factory', 'Function',
-            'get', 'implements', 'import', 'interface', 'late', 'library', 'mixin', 'operator',
-            'part', 'required', 'set', 'static', 'typedef', 'await', 'yield'
-          ];
           var dartField = _dartFieldName(fieldName);
-          if (reservedWords.contains(dartField)) {
+          if (_isReserved(dartField)) {
             dartField = '${dartField}_';
             buffer.writeln('  // "$fieldName" es palabra reservada, renombrado a "$dartField"');
           }
@@ -116,15 +115,7 @@ class ModelGenerator {
         buffer.writeln('  $className({');
         for (final field in fields) {
           var dartField = _dartFieldName(field['name']);
-          if ([
-            'assert', 'break', 'case', 'catch', 'class', 'const', 'continue', 'default',
-            'do', 'else', 'enum', 'extends', 'false', 'final', 'finally', 'for', 'if',
-            'in', 'is', 'new', 'null', 'rethrow', 'return', 'super', 'switch', 'this',
-            'throw', 'true', 'try', 'var', 'void', 'while', 'with', 'abstract', 'as',
-            'covariant', 'deferred', 'dynamic', 'export', 'external', 'factory', 'Function',
-            'get', 'implements', 'import', 'interface', 'late', 'library', 'mixin', 'operator',
-            'part', 'required', 'set', 'static', 'typedef', 'await', 'yield'
-          ].contains(dartField)) {
+          if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
           buffer.writeln('    this.$dartField,');
