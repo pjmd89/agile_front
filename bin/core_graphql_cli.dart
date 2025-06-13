@@ -101,7 +101,7 @@ void _createBaseStructure(String libRoot) {
     '$libRoot/src/core/providers/auth_provider.dart':
         '// TODO: Implementar auth_provider.dart\n',
   };
-
+/*
   files.forEach((path, content) {
     final file = File(path);
     // Asegura que el directorio padre exista antes de crear el archivo
@@ -111,6 +111,7 @@ void _createBaseStructure(String libRoot) {
       print('  + Archivo creado: $path');
     }
   });
+  */
 
   print('Estructura base creada correctamente.');
 }
