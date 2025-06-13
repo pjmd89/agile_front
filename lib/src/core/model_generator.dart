@@ -92,7 +92,7 @@ class ModelGenerator {
   void generateModelsFromTypes(List types) {
     print('Generando modelos a partir de los tipos del esquema...');
     for (final type in types) {
-      if (type['kind'] == 'OBJECT' && !type['name'].startsWith('__')) {
+      if ((type['kind'] == 'OBJECT' || type['kind'] == 'INPUT_OBJECT' || type['kind'] == 'ENUM') && !type['name'].startsWith('__')) {
         final className = type['name'];
         final fields = type['fields'] ?? [];
         final buffer = StringBuffer();
