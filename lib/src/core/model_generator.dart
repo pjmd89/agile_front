@@ -141,10 +141,23 @@ class ModelGenerator {
           // Mapeo de tipos GraphQL a Dart
           String dartType = 'String?';
           if (field['type'] != null) {
-            dartType = _mapGraphQLTypeToDart(field['type']);
-            // Forzar nullable para todos los tipos personalizados y básicos
-            if (!dartType.trim().endsWith('?')) {
-              dartType = dartType + '?';
+            // Si es ENUM, usar el nombre correcto del enum (con sufijo Enum)
+            final fieldType = field['type'];
+            String? enumTypeName;
+            dynamic t = fieldType;
+            while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
+              t = t['ofType'];
+            }
+            if (t is Map && t['kind'] == 'ENUM') {
+              enumTypeName = t['name'];
+            }
+            if (enumTypeName != null) {
+              dartType = enumTypeName + '?';
+            } else {
+              dartType = _mapGraphQLTypeToDart(field['type']);
+              if (!dartType.trim().endsWith('?')) {
+                dartType = dartType + '?';
+              }
             }
           }
           buffer.writeln('  final $dartType $dartField;');
