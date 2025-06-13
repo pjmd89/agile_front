@@ -104,6 +104,8 @@ void _createBaseStructure(String libRoot) {
 
   files.forEach((path, content) {
     final file = File(path);
+    // Asegura que el directorio padre exista antes de crear el archivo
+    Directory(file.parent.path).createSync(recursive: true);
     if (!file.existsSync()) {
       file.writeAsStringSync(content);
       print('  + Archivo creado: $path');
