@@ -1,0 +1,2 @@
+// Archivos base que serán copiados a los proyectos generados
+// Coloca aquí los templates que siempre deben copiarse (ej: datasource_base.dart, repository_base.dart, etc.)

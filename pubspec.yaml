@@ -1,0 +1,10 @@
+name: core_graphql_cli
+version: 0.1.0
+environment:
+  sdk: '>=3.7.0 <4.0.0'
+dependencies:
+  args: ^2.4.2
+  path: ^1.8.3
+  http: ^1.2.1
+  io: ^1.0.4
+  yaml: ^3.1.2

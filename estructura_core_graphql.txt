@@ -1,0 +1,52 @@
+# Documentación de la estructura de carpetas y archivos
+
+Esta estructura está pensada para un core GraphQL en Dart/Flutter, siguiendo Clean Architecture, soporte offline-first, gestión de temas, plantillas y modularidad.
+
+## Estructura principal
+
+```
+lib/
+  src/
+    core/                      # Utilidades generales y helpers compartidos
+      app_router.dart          # Centraliza y conecta todos los routers de los módulos. Permite decidir qué router y presentación cargar.
+      datasource_base.dart     # Datasource genérico para todos los modelos. Provee métodos base para acceso a datos (ej: GraphQL CRUD).
+      repository_base.dart     # Repository genérico para todos los modelos. Implementa lógica base para interactuar con datasources.
+      theme_manager.dart       # Gestiona el tema de la aplicación y permite cambiarlo dinámicamente según el router o módulo.
+      template_manager.dart    # Gestiona la selección y uso dinámico de plantillas en la aplicación.
+      i18n/                    # Recursos de internacionalización (traducciones, archivos arb/json, helpers de idioma)
+      error_manager.dart       # Centraliza el manejo de errores de la app
+      logger.dart              # Centraliza el logging de la app
+      config.dart              # Configuración y constantes globales
+      themes/                  # Subcarpeta para temas personalizados, cada archivo define un tema distinto (ej: blue_dark_theme.dart, yellow_light_theme.dart, etc.)
+      templates/               # Subcarpeta para plantillas reutilizables, cada archivo define una plantilla distinta (ej: login_template.dart, dashboard_template.dart, etc.)
+      providers/               # Proveedores globales (ej: ThemeProvider, AuthProvider, etc.) para el manejo de estado y dependencias.
+        auth_provider.dart     # Proveedor de autenticación y autorización
+    data/                      # (Opcional) Implementaciones concretas si algún modelo lo requiere.
+    modules/                   # Cada módulo agrupa su lógica y presentación
+      ejemplo/                 # Ejemplo de módulo (usuarios, empresas, visitas, etc.)
+        data/
+          models/              # Modelos específicos del módulo
+            ejemplo_model.dart
+          routers/             # Routers específicos del módulo
+            ejemplo_router.dart
+        domain/
+          entities/            # Entidades del dominio del módulo
+            ejemplo.dart
+          repositories/        # Interfaces de repositorios del dominio
+            ejemplo_repository.dart
+        presentation/          # Presentación específica del módulo
+          ejemplo_page.dart
+          ejemplo_bloc.dart
+    test/                      # Carpeta para tests unitarios y de integración
+```
+
+## Notas adicionales
+- **core/**: Todo lo que es reutilizable y global para la app (temas, plantillas, providers, lógica base de datos/repositorios, router central).
+- **themes/**: Puedes tener tantos temas personalizados como necesites, cada uno en su propio archivo.
+- **templates/**: Plantillas reutilizables para presentaciones, layouts, etc.
+- **template_manager.dart**: Se encarga de cambiar y notificar la plantilla activa.
+- **app_router.dart**: Decide qué presentación y plantilla cargar según la ruta o módulo.
+- **modules/**: Cada módulo es autocontenible y agrupa su lógica, datos y presentación.
+- **data/**: Solo necesario si algún modelo requiere una implementación concreta fuera de lo genérico.
+
+Esta estructura permite escalar, mantener y reutilizar el código de manera eficiente, facilitando la integración de nuevos módulos, temas y plantillas.
