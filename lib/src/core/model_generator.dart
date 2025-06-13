@@ -92,7 +92,7 @@ class ModelGenerator {
   void generateModelsFromTypes(List types) {
     print('Generando modelos a partir de los tipos del esquema...');
     for (final type in types) {
-      if ((type['kind'] == 'OBJECT' || type['kind'] == 'INPUT_OBJECT' || type['kind'] == 'ENUM') && !type['name'].startsWith('__')) {
+      if ((type['kind'] == 'OBJECT' || type['kind'] == 'ENUM') && !type['name'].startsWith('__')) {
         final className = type['name'];
         final fields = type['fields'] ?? [];
         final buffer = StringBuffer();
@@ -181,6 +181,10 @@ class ModelGenerator {
       if (type['kind'] == 'INPUT_OBJECT' && !type['name'].startsWith('__')) {
         final className = type['name'];
         final fields = type['inputFields'] ?? [];
+        if (fields.isEmpty) {
+          // No generar clase vacía
+          continue;
+        }
         final buffer = StringBuffer();
         buffer.writeln('import "package:flutter/foundation.dart";');
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
@@ -197,10 +201,10 @@ class ModelGenerator {
           if (fieldName != dartField) {
             buffer.writeln('  @JsonKey(name: "$fieldName")');
           }
-          buffer.writeln('  String? _$dartField;');
-          buffer.writeln('  String? get $dartField => _$dartField;');
+          buffer.writeln('  String? _${dartField};');
+          buffer.writeln('  String? get $dartField => _${dartField};');
           buffer.writeln('  set $dartField(String? value) {');
-          buffer.writeln('    _$dartField = value;');
+          buffer.writeln('    _${dartField} = value;');
           buffer.writeln('    notifyListeners();');
           buffer.writeln('  }');
         }
