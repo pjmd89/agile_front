@@ -127,6 +127,10 @@ class ModelGenerator {
           String dartType = 'String?';
           if (field['type'] != null) {
             dartType = _mapGraphQLTypeToDart(field['type']);
+            // Forzar nullable para todos los tipos personalizados y básicos
+            if (!dartType.trim().endsWith('?')) {
+              dartType = dartType + '?';
+            }
           }
           buffer.writeln('  final $dartType $dartField;');
         }
