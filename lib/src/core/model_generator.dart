@@ -38,8 +38,8 @@ class ModelGenerator {
           buffer.writeln('    this.$dartField,');
         }
         buffer.writeln('  });');
-        buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _${className}FromJson(json);');
-        buffer.writeln('  Map<String, dynamic> toJson() => _${className}ToJson(this);');
+        buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
+        buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
         buffer.writeln('}');
         final outPath = '$libRoot/src/modules/${className.toLowerCase()}/data/models/${className.toLowerCase()}_model.dart';
         final outFile = File(outPath);
