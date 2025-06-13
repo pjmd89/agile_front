@@ -81,5 +81,64 @@ class ModelGenerator {
         print('  + Enum generado: $outPath');
       }
     }
+    // Generar modelos para INPUT_OBJECT
+    for (final type in types) {
+      if (type['kind'] == 'INPUT_OBJECT' && !type['name'].startsWith('__')) {
+        final className = type['name'];
+        final fields = type['inputFields'] ?? [];
+        final buffer = StringBuffer();
+        buffer.writeln('import "package:json_annotation/json_annotation.dart";');
+        buffer.writeln('part "${className.toLowerCase()}_input.g.dart";');
+        buffer.writeln('@JsonSerializable()');
+        buffer.writeln('class $className {');
+        for (final field in fields) {
+          final fieldName = field['name'];
+          // Palabras reservadas y caracteres inválidos
+          const reservedWords = [
+            'assert', 'break', 'case', 'catch', 'class', 'const', 'continue', 'default',
+            'do', 'else', 'enum', 'extends', 'false', 'final', 'finally', 'for', 'if',
+            'in', 'is', 'new', 'null', 'rethrow', 'return', 'super', 'switch', 'this',
+            'throw', 'true', 'try', 'var', 'void', 'while', 'with', 'abstract', 'as',
+            'covariant', 'deferred', 'dynamic', 'export', 'external', 'factory', 'Function',
+            'get', 'implements', 'import', 'interface', 'late', 'library', 'mixin', 'operator',
+            'part', 'required', 'set', 'static', 'typedef', 'await', 'yield'
+          ];
+          var dartField = _dartFieldName(fieldName);
+          if (reservedWords.contains(dartField)) {
+            dartField = '${dartField}_';
+            buffer.writeln('  // "$fieldName" es palabra reservada, renombrado a "$dartField"');
+          }
+          if (fieldName != dartField) {
+            buffer.writeln('  @JsonKey(name: "$fieldName")');
+          }
+          buffer.writeln('  final String? $dartField;');
+        }
+        buffer.writeln('  $className({');
+        for (final field in fields) {
+          var dartField = _dartFieldName(field['name']);
+          if ([
+            'assert', 'break', 'case', 'catch', 'class', 'const', 'continue', 'default',
+            'do', 'else', 'enum', 'extends', 'false', 'final', 'finally', 'for', 'if',
+            'in', 'is', 'new', 'null', 'rethrow', 'return', 'super', 'switch', 'this',
+            'throw', 'true', 'try', 'var', 'void', 'while', 'with', 'abstract', 'as',
+            'covariant', 'deferred', 'dynamic', 'export', 'external', 'factory', 'Function',
+            'get', 'implements', 'import', 'interface', 'late', 'library', 'mixin', 'operator',
+            'part', 'required', 'set', 'static', 'typedef', 'await', 'yield'
+          ].contains(dartField)) {
+            dartField = '${dartField}_';
+          }
+          buffer.writeln('    this.$dartField,');
+        }
+        buffer.writeln('  });');
+        buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
+        buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
+        buffer.writeln('}');
+        final outPath = '$libRoot/src/modules/${className.toLowerCase()}/data/inputs/${className.toLowerCase()}_input.dart';
+        final outFile = File(outPath);
+        outFile.createSync(recursive: true);
+        outFile.writeAsStringSync(buffer.toString());
+        print('  + Input generado: $outPath');
+      }
+    }
   }
 }
