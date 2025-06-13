@@ -96,10 +96,11 @@ class ModelGenerator {
         final className = type['name'];
         final fields = type['inputFields'] ?? [];
         final buffer = StringBuffer();
+        buffer.writeln('import "package:flutter/foundation.dart";');
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_input.g.dart";');
         buffer.writeln('@JsonSerializable()');
-        buffer.writeln('class $className {');
+        buffer.writeln('class $className extends ChangeNotifier {');
         for (final field in fields) {
           final fieldName = field['name'];
           var dartField = _dartFieldName(fieldName);
@@ -110,7 +111,12 @@ class ModelGenerator {
           if (fieldName != dartField) {
             buffer.writeln('  @JsonKey(name: "$fieldName")');
           }
-          buffer.writeln('  final String? $dartField;');
+          buffer.writeln('  String? _$dartField;');
+          buffer.writeln('  String? get $dartField => _$dartField;');
+          buffer.writeln('  set $dartField(String? value) {');
+          buffer.writeln('    _$dartField = value;');
+          buffer.writeln('    notifyListeners();');
+          buffer.writeln('  }');
         }
         buffer.writeln('  $className({');
         for (final field in fields) {
@@ -118,9 +124,17 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          buffer.writeln('    this.$dartField,');
+          buffer.writeln('    String? $dartField,');
         }
-        buffer.writeln('  });');
+        buffer.writeln('  }) {');
+        for (final field in fields) {
+          var dartField = _dartFieldName(field['name']);
+          if (_isReserved(dartField)) {
+            dartField = '${dartField}_';
+          }
+          buffer.writeln('    this.$dartField = $dartField;');
+        }
+        buffer.writeln('  }');
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
         buffer.writeln('}');
