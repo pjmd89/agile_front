@@ -28,14 +28,6 @@ class ModelGenerator {
   // Mapea tipos GraphQL a Dart
   String _mapGraphQLTypeToDart(Map? type) {
     if (type == null) return 'String?';
-    // Si es LIST, mapear el tipo interno recursivamente y aplicar null safety solo al List
-    if (type['kind'] == 'LIST') {
-      String innerType = _mapGraphQLTypeToDart(type['ofType']);
-      if (innerType.endsWith('?')) {
-        innerType = innerType.substring(0, innerType.length - 1);
-      }
-      return 'List<$innerType>?';
-    }
     // Si es NON_NULL, mapear el tipo interno recursivamente y quitar el null safety
     if (type['kind'] == 'NON_NULL') {
       String baseType = _mapGraphQLTypeToDart(type['ofType']);
@@ -43,6 +35,14 @@ class ModelGenerator {
         baseType = baseType.substring(0, baseType.length - 1);
       }
       return baseType;
+    }
+    // Si es LIST, mapear el tipo interno recursivamente y aplicar null safety solo al List
+    if (type['kind'] == 'LIST') {
+      String innerType = _mapGraphQLTypeToDart(type['ofType']);
+      if (innerType.endsWith('?')) {
+        innerType = innerType.substring(0, innerType.length - 1);
+      }
+      return 'List<$innerType>?';
     }
     // Si es SCALAR, ENUM, OBJECT, INPUT_OBJECT, mapear normalmente
     if (type['kind'] == 'SCALAR') {
