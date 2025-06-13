@@ -28,75 +28,44 @@ class ModelGenerator {
   // Mapea tipos GraphQL a Dart
   String _mapGraphQLTypeToDart(Map? type) {
     if (type == null) return 'String?';
-    // Desenrollar listas y nullability
-    bool isList = false;
-    bool isNonNull = false;
-    dynamic t = type;
-    // Proteger desenrollado si t puede ser null
-    while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
-      if (t['kind'] == 'NON_NULL') {
-        isNonNull = true;
-        t = t['ofType'];
-      } else if (t['kind'] == 'LIST') {
-        isList = true;
-        t = t['ofType'];
-      }
-    }
-    String baseType;
-    if (t is! Map) {
-      baseType = 'String';
-    } else {
-      switch (t['kind']) {
-        case 'SCALAR':
-          switch (t['name']) {
-            case 'String':
-              baseType = 'String';
-              break;
-            case 'Int':
-              baseType = 'int';
-              break;
-            case 'Float':
-              baseType = 'double';
-              break;
-            case 'Boolean':
-              baseType = 'bool';
-              break;
-            case 'ID':
-              baseType = 'String';
-              break;
-            default:
-              baseType = 'String';
-          }
-          break;
-        case 'ENUM':
-          baseType = t['name'];
-          break;
-        case 'OBJECT':
-        case 'INPUT_OBJECT':
-          baseType = t['name'];
-          break;
-        default:
-          baseType = 'String';
-      }
-    }
-    String typeStr;
-    if (isList) {
-      // Si es lista, mapear el tipo interno recursivamente (sin null safety en el tipo interno)
-      String innerType = _mapGraphQLTypeToDart(t);
+    // Si es LIST, mapear el tipo interno recursivamente y aplicar null safety solo al List
+    if (type['kind'] == 'LIST') {
+      String innerType = _mapGraphQLTypeToDart(type['ofType']);
       if (innerType.endsWith('?')) {
         innerType = innerType.substring(0, innerType.length - 1);
       }
-      typeStr = 'List<$innerType>';
-      if (!isNonNull) {
-        typeStr += '?';
+      return 'List<$innerType>?';
+    }
+    // Si es NON_NULL, mapear el tipo interno recursivamente y quitar el null safety
+    if (type['kind'] == 'NON_NULL') {
+      String baseType = _mapGraphQLTypeToDart(type['ofType']);
+      if (baseType.endsWith('?')) {
+        baseType = baseType.substring(0, baseType.length - 1);
       }
-    } else {
-      typeStr = baseType;
-      if (!isNonNull) {
-        typeStr += '?';
+      return baseType;
+    }
+    // Si es SCALAR, ENUM, OBJECT, INPUT_OBJECT, mapear normalmente
+    if (type['kind'] == 'SCALAR') {
+      switch (type['name']) {
+        case 'String':
+          return 'String?';
+        case 'Int':
+          return 'int?';
+        case 'Float':
+          return 'double?';
+        case 'Boolean':
+          return 'bool?';
+        case 'ID':
+          return 'String?';
+        default:
+          return 'String?';
       }
     }
-    return typeStr;
+    if (type['kind'] == 'ENUM' || type['kind'] == 'OBJECT' || type['kind'] == 'INPUT_OBJECT') {
+      return type['name'] + '?';
+    }
+    // Por defecto, String nullable
+    return 'String?';
   }
 
   void generateModelsFromTypes(List types) {
