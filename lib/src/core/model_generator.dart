@@ -98,8 +98,7 @@ class ModelGenerator {
         }
         // Importar modelos relacionados
         for (final typeName in customTypes) {
-          buffer.writeln('import "../${typeName.toLowerCase()}/' +
-            '${typeName.toLowerCase()}_model.dart";');
+          buffer.writeln('import "../${typeName.toLowerCase()}/${typeName.toLowerCase()}_model.dart";');
         }
         // Importar enums relacionados
         for (final enumName in enumTypes) {
@@ -155,7 +154,7 @@ class ModelGenerator {
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
         buffer.writeln('}');
-        final outPath = '$libRoot/src/models/types/${className.toLowerCase()}/${className.toLowerCase()}_model.dart';
+        final outPath = '$libRoot/src/domain/entities/types/${className.toLowerCase()}/${className.toLowerCase()}_model.dart';
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
         outFile.writeAsStringSync(buffer.toString());
@@ -178,7 +177,7 @@ class ModelGenerator {
           buffer.writeln('  $dartName,');
         }
         buffer.writeln('}');
-        final outPath = '$libRoot/src/models/enums/${enumName.toLowerCase()}_enum.dart';
+        final outPath = '$libRoot/src/domain/entities/enums/${enumName.toLowerCase()}_enum.dart';
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
         outFile.writeAsStringSync(buffer.toString());
@@ -207,9 +206,9 @@ class ModelGenerator {
         // Si no se encuentra, usar carpeta general de inputs
         String inputOutPath;
         if (parentType != null) {
-          inputOutPath = '$libRoot/src/models/types/${parentType.toLowerCase()}/inputs/${className.toLowerCase()}_input.dart';
+          inputOutPath = '$libRoot/src/domain/entities/types/${parentType.toLowerCase()}/inputs/${className.toLowerCase()}_input.dart';
         } else {
-          inputOutPath = '$libRoot/src/models/inputs/${className.toLowerCase()}_input.dart';
+          inputOutPath = '$libRoot/src/domain/entities/inputs/${className.toLowerCase()}_input.dart';
         }
         final buffer = StringBuffer();
         buffer.writeln('import "package:flutter/foundation.dart";');
