@@ -25,7 +25,7 @@ class ModelGenerator {
 
   bool _isReserved(String name) => _reservedWords.contains(name);
 
-  // Mapea tipos GraphQL a Dart
+  // Mapea tipos GraphQL a Dart de forma precisa
   String _mapGraphQLTypeToDart(Map? type) {
     if (type == null) return 'String?';
     // Si es NON_NULL, mapear el tipo interno recursivamente y quitar el null safety
@@ -39,6 +39,7 @@ class ModelGenerator {
     // Si es LIST, mapear el tipo interno recursivamente y aplicar null safety solo al List
     if (type['kind'] == 'LIST') {
       String innerType = _mapGraphQLTypeToDart(type['ofType']);
+      // El tipo interno nunca debe ser nullable dentro de la lista
       if (innerType.endsWith('?')) {
         innerType = innerType.substring(0, innerType.length - 1);
       }
@@ -226,9 +227,14 @@ class ModelGenerator {
           if (fieldName != dartField) {
             buffer.writeln('  @JsonKey(name: "$fieldName")');
           }
-          buffer.writeln('  String? _${dartField};');
-          buffer.writeln('  String? get $dartField => _${dartField};');
-          buffer.writeln('  set $dartField(String? value) {');
+          // Usar el tipo correcto para el campo
+          String dartType = _mapGraphQLTypeToDart(field['type']);
+          if (!dartType.trim().endsWith('?')) {
+            dartType = dartType + '?';
+          }
+          buffer.writeln('  $dartType _${dartField};');
+          buffer.writeln('  $dartType get $dartField => _${dartField};');
+          buffer.writeln('  set $dartField($dartType value) {');
           buffer.writeln('    _${dartField} = value;');
           buffer.writeln('    notifyListeners();');
           buffer.writeln('  }');
@@ -239,7 +245,11 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          buffer.writeln('    String? $dartField,');
+          String dartType = _mapGraphQLTypeToDart(field['type']);
+          if (!dartType.trim().endsWith('?')) {
+            dartType = dartType + '?';
+          }
+          buffer.writeln('    $dartType $dartField,');
         }
         buffer.writeln('  }) {');
         for (final field in fields) {
