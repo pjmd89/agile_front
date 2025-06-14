@@ -78,12 +78,39 @@ class OperationGenerator {
   }
 
   String _buildGraphQLOperationString(String operationType, Map op) {
-    // Por ahora solo el string básico de la operación
-    final name = op['name'];
-    return '''
+    final name = op['name'] as String;
+    final className = _capitalize(_toCamelCase(name)) + _capitalize(operationType);
+    final args = op['args'] as List? ?? [];
+    // Definir campos y parámetros del constructor
+    final fields = <String>[];
+    final params = <String>[];
+    for (final arg in args) {
+      final argName = arg['name'];
+      final isRequired = (arg['type']['kind'] == 'NON_NULL');
+      final dartType = 'dynamic'; // TODO: mapear tipo GraphQL a Dart
+      fields.add('  final $dartType $argName;');
+      params.add(isRequired ? 'required this.$argName' : 'this.$argName');
+    }
+    final fieldsStr = fields.join('\n');
+    final paramsStr = params.join(', ');
+    return """
+class $className {
+$fieldsStr
+
+  $className({$paramsStr});
+
+  static const String operation = '''
 $operationType $name {
   // ...campos...
 }
 ''';
+}
+""";
+  }
+
+  String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+  String _toCamelCase(String s) {
+    final parts = s.split('_');
+    return parts.first + parts.skip(1).map((w) => _capitalize(w)).join();
   }
 }
