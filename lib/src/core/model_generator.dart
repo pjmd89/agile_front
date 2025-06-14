@@ -139,9 +139,13 @@ class ModelGenerator {
               }
             }
           }
-          // Si es String, debe ser no nulo
+          // Si es String, bool o num, debe ser no nulo
           if (dartType == 'String' || dartType == 'String?') {
             buffer.writeln('  final String $dartField;');
+          } else if (dartType == 'bool' || dartType == 'bool?') {
+            buffer.writeln('  final bool $dartField;');
+          } else if (dartType == 'num' || dartType == 'num?') {
+            buffer.writeln('  final num $dartField;');
           } else {
             buffer.writeln('  final $dartType $dartField;');
           }
@@ -153,7 +157,7 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          // Determinar tipo para saber si es String no nulo
+          // Determinar tipo para saber si es String, bool o num no nulo
           String dartType = 'String?';
           if (field['type'] != null) {
             final fieldType = field['type'];
@@ -173,6 +177,10 @@ class ModelGenerator {
           }
           if (dartType == 'String' || dartType == 'String?') {
             buffer.writeln('    this.$dartField = "",');
+          } else if (dartType == 'bool' || dartType == 'bool?') {
+            buffer.writeln('    this.$dartField = false,');
+          } else if (dartType == 'num' || dartType == 'num?') {
+            buffer.writeln('    this.$dartField = 0,');
           } else {
             buffer.writeln('    this.$dartField,');
           }
