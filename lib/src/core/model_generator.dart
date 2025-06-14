@@ -542,112 +542,90 @@ class ModelGenerator {
       print('No se encontraron directivas en el esquema.');
       // Aún así, crear barrel mínimo
       final barrel = File('${dir.path}/main.dart');
-      final barrelContent = "export 'directive_model.dart';\n";
-      barrel.writeAsStringSync(barrelContent);
-      print('  + Barrel de directivas actualizado: ${barrel.path}');
+      barrel.writeAsStringSync('// No hay directivas en el esquema.\n');
+      print('  + Barrel de directivas actualizado: \\${barrel.path}');
       return;
     }
     final exportFiles = <String>[];
     for (final d in directives) {
       final rawName = d['name'].toString();
       final folderName = rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_').toLowerCase();
-      final className = _toPascalCase(rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_')) + 'Directive';
-      final argClassName = className + 'Arg';
-      final fileName = '${folderName}_directive.dart';
+      final className = _toPascalCase(rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_')) + 'Args';
+      final fileName = '${folderName}_args.dart';
       final subDir = Directory('${dir.path}/$folderName');
       subDir.createSync(recursive: true);
       final buffer = StringBuffer();
       buffer.writeln('// GENERATED FILE. NO EDITAR MANUALMENTE.');
       buffer.writeln('class $className {');
-      buffer.writeln('  final String name;');
-      buffer.writeln('  final String? description;');
-      buffer.writeln('  final List<String> locations;');
-      buffer.writeln('  final List<$argClassName> args;');
-      buffer.writeln('  const $className({required this.name, this.description, required this.locations, required this.args});');
-      buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => $className(');
-      buffer.writeln('    name: json["name"] as String,');
-      buffer.writeln('    description: json["description"] as String?,');
-      buffer.writeln('    locations: List<String>.from(json["locations"] ?? []),');
-      buffer.writeln('    args: (json["args"] as List<dynamic>? ?? []).map((e) => $argClassName.fromJson(e as Map<String, dynamic>)).toList(),');
-      buffer.writeln('  );');
-      buffer.writeln('  Map<String, dynamic> toJson() => {');
-      buffer.writeln('    "name": name,');
-      buffer.writeln('    "description": description,');
-      buffer.writeln('    "locations": locations,');
-      buffer.writeln('    "args": args.map((e) => e.toJson()).toList(),');
-      buffer.writeln('  };');
-      buffer.writeln('}');
-      // Clase para los argumentos de la directiva
-      buffer.writeln('class $argClassName {');
-      buffer.writeln('  final String name;');
-      buffer.writeln('  final String? description;');
-      buffer.writeln('  final Map<String, dynamic>? type;');
-      buffer.writeln('  final String? defaultValue;');
-      buffer.writeln('  const $argClassName({required this.name, this.description, this.type, this.defaultValue});');
-      buffer.writeln('  factory $argClassName.fromJson(Map<String, dynamic> json) => $argClassName(');
-      buffer.writeln('    name: json["name"] as String,');
-      buffer.writeln('    description: json["description"] as String?,');
-      buffer.writeln('    type: json["type"] as Map<String, dynamic>?,');
-      buffer.writeln('    defaultValue: json["defaultValue"] as String?,');
-      buffer.writeln('  );');
-      buffer.writeln('  Map<String, dynamic> toJson() => {');
-      buffer.writeln('    "name": name,');
-      buffer.writeln('    "description": description,');
-      buffer.writeln('    "type": type,');
-      buffer.writeln('    "defaultValue": defaultValue,');
-      buffer.writeln('  };');
-      buffer.writeln('}');
-      // Instancia por defecto
-      buffer.writeln('const $className default$className = $className(');
-      buffer.writeln('  name: ${_dartString(d['name'])},');
-      buffer.writeln('  description: ${_dartString(d['description'])},');
-      buffer.writeln('  locations: ${_dartListString(d['locations'])},');
-      buffer.writeln('  args: [');
-      for (final arg in (d['args'] ?? [])) {
-        buffer.writeln('    $argClassName(');
-        buffer.writeln('      name: ${_dartString(arg['name'])},');
-        buffer.writeln('      description: ${_dartString(arg['description'])},');
-        buffer.writeln('      type: ${_dartMapString(arg['type'])},');
-        buffer.writeln('      defaultValue: ${_dartString(arg['defaultValue'])},');
-        buffer.writeln('    ),');
+      final args = d['args'] ?? [];
+      if (args.isEmpty) {
+        buffer.writeln('  const $className();');
+        buffer.writeln('  factory $className.fromJson(Map<String, dynamic> _) => const $className();');
+        buffer.writeln('  Map<String, dynamic> toJson() => {};');
+      } else {
+        // Campos
+        for (final arg in args) {
+          final argName = arg['name'];
+          final dartField = _isReserved(argName) ? '${argName}_' : argName;
+          final type = arg['type'] as Map?;
+          final dartType = _mapGraphQLTypeToDart(type);
+          buffer.writeln('  final $dartType $dartField;');
+        }
+        // Constructor
+        buffer.write('  const $className({');
+        buffer.write(args.map((arg) {
+          final argName = arg['name'];
+          final dartField = _isReserved(argName) ? '${argName}_' : argName;
+          return 'this.$dartField';
+        }).join(', '));
+        buffer.writeln('});');
+        // fromJson
+        buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => $className(');
+        for (final arg in args) {
+          final argName = arg['name'];
+          final dartField = _isReserved(argName) ? '${argName}_' : argName;
+          final type = arg['type'] as Map?;
+          final dartType = _mapGraphQLTypeToDart(type);
+          if (dartType.startsWith('List<')) {
+            buffer.writeln('    $dartField: (json["$argName"] as List?)?.cast(),');
+          } else if (dartType == 'bool?' || dartType == 'bool') {
+            buffer.writeln('    $dartField: json["$argName"] == null ? null : json["$argName"] as bool,');
+          } else if (dartType == 'num?' || dartType == 'num') {
+            buffer.writeln('    $dartField: json["$argName"] == null ? null : (json["$argName"] as num),');
+          } else {
+            buffer.writeln('    $dartField: json["$argName"] as $dartType,');
+          }
+        }
+        buffer.writeln('  );');
+        // toJson
+        buffer.writeln('  Map<String, dynamic> toJson() => {');
+        for (final arg in args) {
+          final argName = arg['name'];
+          final dartField = _isReserved(argName) ? '${argName}_' : argName;
+          buffer.writeln('    "$argName": $dartField,');
+        }
+        buffer.writeln('  };');
       }
-      buffer.writeln('  ],');
-      buffer.writeln(');');
+      buffer.writeln('}');
       final outFile = File('${subDir.path}/$fileName');
       outFile.writeAsStringSync(buffer.toString());
       exportFiles.add('$folderName/$fileName');
-      print('  + Directiva generada: ${outFile.path}');
+      print('  + Argumentos de directiva generados: \\${outFile.path}');
     }
     // Actualizar barrel file
     final barrel = File('${dir.path}/main.dart');
     final buffer = StringBuffer();
-    buffer.writeln("export 'directive_model.dart';");
     for (final file in exportFiles) {
       buffer.writeln("export './$file';");
     }
     barrel.writeAsStringSync(buffer.toString());
-    print('  + Barrel de directivas actualizado: ${barrel.path}');
+    print('  + Barrel de directivas actualizado: \\${barrel.path}');
   }
 
   String _toPascalCase(String input) {
     if (input.isEmpty) return input;
     final parts = input.split('_');
     return parts.map((e) => e.isNotEmpty ? e[0].toUpperCase() + e.substring(1).toLowerCase() : '').join();
-  }
-
-  String _dartString(dynamic value) {
-    if (value == null) return 'null';
-    return '"${value.toString().replaceAll('"', '\\"')}"';
-  }
-
-  String _dartListString(List? list) {
-    if (list == null) return 'const []';
-    return 'const [${list.map((e) => _dartString(e)).join(', ')}]';
-  }
-
-  String _dartMapString(Map? map) {
-    if (map == null) return 'null';
-    return map.toString().replaceAll("'", '"');
   }
 }
 
