@@ -202,37 +202,6 @@ class ModelGenerator {
         buffer.writeln('  });');
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
-        // --- Método estático select() para el builder ---
-        buffer.writeln('  /// Builder para selección de campos GraphQL');
-        buffer.writeln('  static ${className}FieldsBuilder select() => ${className}FieldsBuilder();');
-        buffer.writeln('}');
-
-        // --- BUILDER DE FIELDS PARA GRAPHQL ---
-        buffer.writeln('''
-class ${className}FieldsBuilder {
-  final List<String> _fields = [];
-''');
-        for (final field in fields) {
-          final fieldName = field['name'];
-          var dartField = _dartFieldName(fieldName);
-          // Detectar si es objeto o lista de objeto
-          dynamic t = field['type'];
-          while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
-            t = t['ofType'];
-          }
-          if (t is Map && t['kind'] == 'OBJECT') {
-            final typeName = t['name'];
-            buffer.writeln('  ${className}FieldsBuilder $dartField(void Function(${typeName}FieldsBuilder) builder) {');
-            buffer.writeln('    final child = ${typeName}FieldsBuilder();');
-            buffer.writeln('    builder(child);');
-            buffer.writeln('    _fields.add("$fieldName { \${child.build()} }");');
-            buffer.writeln('    return this;');
-            buffer.writeln('  }');
-          } else {
-            buffer.writeln('  ${className}FieldsBuilder $dartField() { _fields.add("$fieldName"); return this; }');
-          }
-        }
-        buffer.writeln('  String build() => _fields.join(" ");');
         buffer.writeln('}');
         final outPath = '$libRoot/src/domain/entities/types/${className.toLowerCase()}/${className.toLowerCase()}_model.dart';
         final outFile = File(outPath);
