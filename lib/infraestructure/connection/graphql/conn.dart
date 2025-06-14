@@ -1,16 +1,16 @@
 import 'package:agile_front/infraestructure/connection/service.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-
+import 'package:agile_front/infraestructure/operation.dart' as op;
 
 class GraphqlConn extends Service{
   final GraphQLClient _client;
   GraphqlConn(GraphQLClient client) : _client = client;
   @override
-  operation({required String operation, required Function(Map<String, dynamic>) callback, Map<String, dynamic>? variables}) async{
+  operation({required op.Operation operation, required void Function(Object) callback, Map<String, dynamic>? variables}) async{
     final queryVariables = variables ?? {};
     final response = await _client.query(
       QueryOptions(
-        document: gql(operation), 
+        document: gql(operation.build()), 
         variables: queryVariables,
       ),
     );
@@ -22,6 +22,6 @@ class GraphqlConn extends Service{
       }
       return;
     }
-    callback(response.data ?? {});
+    callback(operation.result(response.data ?? {}));
   }
 }
