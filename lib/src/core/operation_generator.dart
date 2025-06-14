@@ -114,7 +114,7 @@ class OperationGenerator {
       builderField = '  final $builderType builder;';
       builderParam = 'required this.builder';
       builderUsage = '\n    final fields = builder.build();';
-      importBuilder = "import '../../operation/fields_builders/main.dart';\n";
+      importBuilder = "import '/src/domain/operation/fields_builders/main.dart';\n";
     }
     final fieldsStr = [if (builderField.isNotEmpty) builderField, ...fields].join('\n');
     final paramsStr = [if (builderParam.isNotEmpty) builderParam, ...params].join(', ');
@@ -129,7 +129,7 @@ $fieldsStr
     ${builderUsage.isNotEmpty ? builderUsage : ''}
     return '''
 $operationType $name {
-  \\${builderType != null ? 'fields' : ''}
+  \\${builderType != null ? '\$fields' : ''}
 }
 ''';
   }
