@@ -147,7 +147,9 @@ class ModelGenerator {
           } else if (dartType == 'num' || dartType == 'num?') {
             buffer.writeln('  final num $dartField;');
           } else if (dartType.startsWith('List<')) {
-            buffer.writeln('  final $dartType $dartField;');
+            // Quitar el ? para que no sea nullable
+            final nonNullableListType = dartType.replaceAll('?', '');
+            buffer.writeln('  final $nonNullableListType $dartField;');
           } else {
             buffer.writeln('  final $dartType $dartField;');
           }
