@@ -129,7 +129,7 @@ $fieldsStr
     ${builderUsage.isNotEmpty ? builderUsage : ''}
     return '''
 $operationType $name {
-  \\${builderType != null ? '\$fields' : ''}
+  \\${builderType != null ? '$fields' : ''}
 }
 ''';
   }
