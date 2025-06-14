@@ -415,6 +415,8 @@ class ModelGenerator {
                 }
                 break;
               case 'ENUM':
+                defaultValue = isNullable ? 'null' : '${t['name']}.values.first';
+                break;
               case 'OBJECT':
               case 'INPUT_OBJECT':
                 defaultValue = isNullable ? 'null' : '${t['name']}()';
