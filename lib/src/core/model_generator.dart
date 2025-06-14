@@ -552,29 +552,67 @@ class ModelGenerator {
       final rawName = d['name'].toString();
       final folderName = rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_').toLowerCase();
       final className = _toPascalCase(rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_')) + 'Directive';
+      final argClassName = className + 'Arg';
       final fileName = '${folderName}_directive.dart';
       final subDir = Directory('${dir.path}/$folderName');
       subDir.createSync(recursive: true);
       final buffer = StringBuffer();
       buffer.writeln('// GENERATED FILE. NO EDITAR MANUALMENTE.');
-      buffer.writeln('import "../directive_model.dart";');
-      buffer.writeln('class $className extends DirectiveModel {');
-      buffer.writeln('  const $className() : super(');
-      buffer.writeln('    name: ${_dartString(d['name'])},');
-      buffer.writeln('    description: ${_dartString(d['description'])},');
-      buffer.writeln('    locations: ${_dartListString(d['locations'])},');
-      buffer.writeln('    args: [');
-      for (final arg in (d['args'] ?? [])) {
-        buffer.writeln('      DirectiveArgModel(');
-        buffer.writeln('        name: ${_dartString(arg['name'])},');
-        buffer.writeln('        description: ${_dartString(arg['description'])},');
-        buffer.writeln('        type: ${_typeRefFromIntrospection(arg['type'])},');
-        buffer.writeln('        defaultValue: ${_dartString(arg['defaultValue'])},');
-        buffer.writeln('      ),');
-      }
-      buffer.writeln('    ],');
+      buffer.writeln('class $className {');
+      buffer.writeln('  final String name;');
+      buffer.writeln('  final String? description;');
+      buffer.writeln('  final List<String> locations;');
+      buffer.writeln('  final List<$argClassName> args;');
+      buffer.writeln('  const $className({required this.name, this.description, required this.locations, required this.args});');
+      buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => $className(');
+      buffer.writeln('    name: json["name"] as String,');
+      buffer.writeln('    description: json["description"] as String?,');
+      buffer.writeln('    locations: List<String>.from(json["locations"] ?? []),');
+      buffer.writeln('    args: (json["args"] as List<dynamic>? ?? []).map((e) => $argClassName.fromJson(e as Map<String, dynamic>)).toList(),');
       buffer.writeln('  );');
+      buffer.writeln('  Map<String, dynamic> toJson() => {');
+      buffer.writeln('    "name": name,');
+      buffer.writeln('    "description": description,');
+      buffer.writeln('    "locations": locations,');
+      buffer.writeln('    "args": args.map((e) => e.toJson()).toList(),');
+      buffer.writeln('  };');
       buffer.writeln('}');
+      // Clase para los argumentos de la directiva
+      buffer.writeln('class $argClassName {');
+      buffer.writeln('  final String name;');
+      buffer.writeln('  final String? description;');
+      buffer.writeln('  final Map<String, dynamic>? type;');
+      buffer.writeln('  final String? defaultValue;');
+      buffer.writeln('  const $argClassName({required this.name, this.description, this.type, this.defaultValue});');
+      buffer.writeln('  factory $argClassName.fromJson(Map<String, dynamic> json) => $argClassName(');
+      buffer.writeln('    name: json["name"] as String,');
+      buffer.writeln('    description: json["description"] as String?,');
+      buffer.writeln('    type: json["type"] as Map<String, dynamic>?,');
+      buffer.writeln('    defaultValue: json["defaultValue"] as String?,');
+      buffer.writeln('  );');
+      buffer.writeln('  Map<String, dynamic> toJson() => {');
+      buffer.writeln('    "name": name,');
+      buffer.writeln('    "description": description,');
+      buffer.writeln('    "type": type,');
+      buffer.writeln('    "defaultValue": defaultValue,');
+      buffer.writeln('  };');
+      buffer.writeln('}');
+      // Instancia por defecto
+      buffer.writeln('const $className default$className = $className(');
+      buffer.writeln('  name: ${_dartString(d['name'])},');
+      buffer.writeln('  description: ${_dartString(d['description'])},');
+      buffer.writeln('  locations: ${_dartListString(d['locations'])},');
+      buffer.writeln('  args: [');
+      for (final arg in (d['args'] ?? [])) {
+        buffer.writeln('    $argClassName(');
+        buffer.writeln('      name: ${_dartString(arg['name'])},');
+        buffer.writeln('      description: ${_dartString(arg['description'])},');
+        buffer.writeln('      type: ${_dartMapString(arg['type'])},');
+        buffer.writeln('      defaultValue: ${_dartString(arg['defaultValue'])},');
+        buffer.writeln('    ),');
+      }
+      buffer.writeln('  ],');
+      buffer.writeln(');');
       final outFile = File('${subDir.path}/$fileName');
       outFile.writeAsStringSync(buffer.toString());
       exportFiles.add('$folderName/$fileName');
@@ -607,12 +645,9 @@ class ModelGenerator {
     return 'const [${list.map((e) => _dartString(e)).join(', ')}]';
   }
 
-  String _typeRefFromIntrospection(Map? type) {
-    if (type == null) return 'null';
-    final kind = _dartString(type['kind']);
-    final name = _dartString(type['name']);
-    final ofType = type['ofType'] != null ? _typeRefFromIntrospection(type['ofType']) : 'null';
-    return 'GraphQLTypeRef(kind: $kind, name: $name, ofType: $ofType)';
+  String _dartMapString(Map? map) {
+    if (map == null) return 'null';
+    return map.toString().replaceAll("'", '"');
   }
 }
 
