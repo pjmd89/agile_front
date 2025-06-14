@@ -202,6 +202,9 @@ class ModelGenerator {
         buffer.writeln('  });');
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
+        // --- Método estático select() para el builder ---
+        buffer.writeln('  /// Builder para selección de campos GraphQL');
+        buffer.writeln('  static ${className}FieldsBuilder select() => ${className}FieldsBuilder();');
         buffer.writeln('}');
 
         // --- BUILDER DE FIELDS PARA GRAPHQL ---
@@ -223,14 +226,14 @@ class ${className}FieldsBuilder {
             buffer.writeln('    if (builder != null) {');
             buffer.writeln('      final child = ${typeName}FieldsBuilder();');
             buffer.writeln('      builder(child);');
-            buffer.writeln("      _fields.add(' 24dartField {  24{child.build()} }');");
+            buffer.writeln('      _fields.add("$fieldName { {child.build()} }");');
             buffer.writeln('    } else {');
-            buffer.writeln("      _fields.add(' 24dartField');");
+            buffer.writeln('      _fields.add("$fieldName");');
             buffer.writeln('    }');
             buffer.writeln('    return this;');
             buffer.writeln('  }');
           } else {
-            buffer.writeln("  ${className}FieldsBuilder $dartField() { _fields.add(' 24dartField'); return this; }");
+            buffer.writeln('  ${className}FieldsBuilder $dartField() { _fields.add("$fieldName"); return this; }');
           }
         }
         buffer.writeln('  String build() => _fields.join(" ");');
