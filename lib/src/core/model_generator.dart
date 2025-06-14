@@ -530,11 +530,11 @@ class ModelGenerator {
 
   void generateModelsFromSchema(Map schema) {
     final types = schema['types'] ?? [];
-    final directives = schema['directives'] ?? [];
+    //final directives = schema['directives'] ?? [];
     generateModelsFromTypes(types);
     //_generateDirectivesData(directives);
   }
-
+  /*
   void _generateDirectivesData(List directives) {
     final dir = Directory('$libRoot/src/domain/entities/directives');
     dir.createSync(recursive: true);
@@ -621,12 +621,13 @@ class ModelGenerator {
     barrel.writeAsStringSync(buffer.toString());
     print('  + Barrel de directivas actualizado: \\${barrel.path}');
   }
-
+  
   String _toPascalCase(String input) {
     if (input.isEmpty) return input;
     final parts = input.split('_');
     return parts.map((e) => e.isNotEmpty ? e[0].toUpperCase() + e.substring(1).toLowerCase() : '').join();
   }
+  */
 }
 
 // Función auxiliar para extraer el nombre de tipo personalizado
