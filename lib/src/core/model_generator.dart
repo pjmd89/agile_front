@@ -127,23 +127,22 @@ class ModelGenerator {
           }
           // Mapeo de tipos GraphQL a Dart
           String dartType = 'String?';
-          bool isNonNull = false;
           if (field['type'] != null) {
-            dynamic t = field['type'];
-            if (t['kind'] == 'NON_NULL') {
-              isNonNull = true;
+            // Si es ENUM, usar el nombre correcto del enum (con sufijo Enum)
+            final fieldType = field['type'];
+            String? enumTypeName;
+            dynamic t = fieldType;
+            while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
               t = t['ofType'];
             }
-            // Si es ENUM, usar el nombre correcto del enum (con sufijo Enum)
-            String? enumTypeName;
             if (t is Map && t['kind'] == 'ENUM') {
               enumTypeName = t['name'];
             }
             if (enumTypeName != null) {
-              dartType = enumTypeName + (isNonNull ? '' : '?');
+              dartType = enumTypeName + '?';
             } else {
               dartType = _mapGraphQLTypeToDart(field['type']);
-              if (!dartType.trim().endsWith('?') && !isNonNull) {
+              if (!dartType.trim().endsWith('?')) {
                 dartType = dartType + '?';
               }
             }
@@ -159,10 +158,6 @@ class ModelGenerator {
             // Quitar el ? para que no sea nullable
             final nonNullableListType = dartType.replaceAll('?', '');
             buffer.writeln('  final $nonNullableListType $dartField;');
-          } else if (isNonNull && (dartType.endsWith('Input') || dartType.endsWith('Input?') || dartType.endsWith('Enum') || dartType.endsWith('Enum?') || dartType.endsWith('Object') || dartType.endsWith('Object?'))) {
-            // Si es un objeto no nulo, inicializar con el constructor por defecto
-            final typeName = dartType.replaceAll('?', '');
-            buffer.writeln('  final $typeName $dartField;');
           } else {
             buffer.writeln('  final $dartType $dartField;');
           }
@@ -176,19 +171,18 @@ class ModelGenerator {
           }
           // Determinar tipo para saber si es String, bool, num o List no nulo
           String dartType = 'String?';
-          bool isNonNull = false;
           if (field['type'] != null) {
-            dynamic t = field['type'];
-            if (t['kind'] == 'NON_NULL') {
-              isNonNull = true;
+            final fieldType = field['type'];
+            String? enumTypeName;
+            dynamic t = fieldType;
+            while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
               t = t['ofType'];
             }
-            String? enumTypeName;
             if (t is Map && t['kind'] == 'ENUM') {
               enumTypeName = t['name'];
             }
             if (enumTypeName != null) {
-              dartType = enumTypeName + (isNonNull ? '' : '?');
+              dartType = enumTypeName + '?';
             } else {
               dartType = _mapGraphQLTypeToDart(field['type']);
             }
@@ -201,10 +195,6 @@ class ModelGenerator {
             buffer.writeln('    this.$dartField = 0,');
           } else if (dartType.startsWith('List<')) {
             buffer.writeln('    this.$dartField = const [],');
-          } else if (isNonNull && (dartType.endsWith('Input') || dartType.endsWith('Object') || dartType.endsWith('Enum'))) {
-            // Inicializar con el constructor por defecto
-            final typeName = dartType.replaceAll('?', '');
-            buffer.writeln('    this.$dartField = const $typeName(),');
           } else {
             buffer.writeln('    this.$dartField,');
           }
