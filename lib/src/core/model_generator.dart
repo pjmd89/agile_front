@@ -550,12 +550,15 @@ class ModelGenerator {
     final exportFiles = <String>[];
     for (final d in directives) {
       final rawName = d['name'].toString();
-      final fileName = rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_').toLowerCase() + '.dart';
-      final constName = _toCamelCase(rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_'));
+      final folderName = rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_').toLowerCase();
+      final className = _toPascalCase(rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_')) + 'Directive';
+      final fileName = '${folderName}_directive.dart';
+      final subDir = Directory('${dir.path}/$folderName');
+      subDir.createSync(recursive: true);
       final buffer = StringBuffer();
       buffer.writeln('// GENERATED FILE. NO EDITAR MANUALMENTE.');
-      buffer.writeln('import "directive_model.dart";');
-      buffer.writeln('const DirectiveModel $constName = DirectiveModel(');
+      buffer.writeln('import "../directive_model.dart";');
+      buffer.writeln('final $className = DirectiveModel(');
       buffer.writeln('  name: ${_dartString(d['name'])},');
       buffer.writeln('  description: ${_dartString(d['description'])},');
       buffer.writeln('  locations: ${_dartListString(d['locations'])},');
@@ -570,9 +573,9 @@ class ModelGenerator {
       }
       buffer.writeln('  ],');
       buffer.writeln(');');
-      final outFile = File('${dir.path}/$fileName');
+      final outFile = File('${subDir.path}/$fileName');
       outFile.writeAsStringSync(buffer.toString());
-      exportFiles.add(fileName);
+      exportFiles.add('$folderName/$fileName');
       print('  + Directiva generada: ${outFile.path}');
     }
     // Actualizar barrel file
@@ -580,16 +583,16 @@ class ModelGenerator {
     final buffer = StringBuffer();
     buffer.writeln("export 'directive_model.dart';");
     for (final file in exportFiles) {
-      buffer.writeln("export '$file';");
+      buffer.writeln("export './$file';");
     }
     barrel.writeAsStringSync(buffer.toString());
     print('  + Barrel de directivas actualizado: ${barrel.path}');
   }
 
-  String _toCamelCase(String input) {
+  String _toPascalCase(String input) {
     if (input.isEmpty) return input;
     final parts = input.split('_');
-    return parts.first.toLowerCase() + parts.skip(1).map((e) => e.isNotEmpty ? e[0].toUpperCase() + e.substring(1).toLowerCase() : '').join();
+    return parts.map((e) => e.isNotEmpty ? e[0].toUpperCase() + e.substring(1).toLowerCase() : '').join();
   }
 
   String _dartString(dynamic value) {
