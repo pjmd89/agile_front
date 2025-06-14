@@ -267,9 +267,50 @@ class ModelGenerator {
           if (fieldName != dartField) {
             buffer.writeln('  @JsonKey(name: "$fieldName")');
           }
-          buffer.writeln('  String? _${dartField};');
-          buffer.writeln('  String? get $dartField => _${dartField};');
-          buffer.writeln('  set $dartField(String? value) {');
+          // Determinar tipo y valor por defecto
+          String dartType;
+          bool isNullable = true;
+          dynamic t = field['type'];
+          if (t['kind'] == 'NON_NULL') {
+            isNullable = false;
+            t = t['ofType'];
+          }
+          if (t is Map) {
+            switch (t['kind']) {
+              case 'SCALAR':
+                switch (t['name']) {
+                  case 'String':
+                    dartType = isNullable ? 'String?' : 'String';
+                    break;
+                  case 'Boolean':
+                    dartType = isNullable ? 'bool?' : 'bool';
+                    break;
+                  case 'Int':
+                  case 'Float':
+                    dartType = isNullable ? 'num?' : 'num';
+                    break;
+                  default:
+                    dartType = isNullable ? 'String?' : 'String';
+                }
+                break;
+              case 'ENUM':
+              case 'OBJECT':
+              case 'INPUT_OBJECT':
+                dartType = t['name'] + (isNullable ? '?' : '');
+                break;
+              case 'LIST':
+                String innerType = _mapGraphQLTypeToDart(t['ofType']);
+                dartType = 'List<$innerType>' + (isNullable ? '?' : '');
+                break;
+              default:
+                dartType = isNullable ? 'String?' : 'String';
+            }
+          } else {
+            dartType = 'String?';
+          }
+          buffer.writeln('  $dartType _${dartField};');
+          buffer.writeln('  $dartType get $dartField => _${dartField};');
+          buffer.writeln('  set $dartField($dartType value) {');
           buffer.writeln('    _${dartField} = value;');
           buffer.writeln('    notifyListeners();');
           buffer.writeln('  }');
@@ -280,7 +321,7 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          buffer.writeln('    String? $dartField,');
+          buffer.writeln('    $dartField,');
         }
         buffer.writeln('  }) {');
         for (final field in fields) {
@@ -288,7 +329,47 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          buffer.writeln('    this.$dartField = $dartField;');
+          // Determinar valor por defecto para la asignación
+          String defaultValue;
+          bool isNullable = true;
+          dynamic t = field['type'];
+          if (t['kind'] == 'NON_NULL') {
+            isNullable = false;
+            t = t['ofType'];
+          }
+          if (t is Map) {
+            switch (t['kind']) {
+              case 'SCALAR':
+                switch (t['name']) {
+                  case 'String':
+                    defaultValue = '""';
+                    break;
+                  case 'Boolean':
+                    defaultValue = 'false';
+                    break;
+                  case 'Int':
+                  case 'Float':
+                    defaultValue = '0';
+                    break;
+                  default:
+                    defaultValue = '""';
+                }
+                break;
+              case 'ENUM':
+              case 'OBJECT':
+              case 'INPUT_OBJECT':
+                defaultValue = 'null';
+                break;
+              case 'LIST':
+                defaultValue = isNullable ? 'null' : 'const []';
+                break;
+              default:
+                defaultValue = '""';
+            }
+          } else {
+            defaultValue = 'null';
+          }
+          buffer.writeln('    this.$dartField = $dartField ?? $defaultValue;');
         }
         buffer.writeln('  }');
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
