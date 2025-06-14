@@ -196,7 +196,7 @@ class ModelGenerator {
             }
           }
           final requiredModifier = isNullable ? '' : 'required ';
-          buffer.writeln('    $requiredModifier$this.dartType $dartField,');
+          buffer.writeln('    $requiredModifier$dartType $dartField,');
         }
         buffer.writeln('  });');
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
