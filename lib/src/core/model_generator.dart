@@ -531,6 +531,8 @@ class ModelGenerator {
   void generateModelsFromSchema(Map schema) {
     final types = schema['types'] ?? [];
     final directives = schema['directives'] ?? [];
+    print('Cantidad de directivas: ${directives.length}');
+    return;
     generateModelsFromTypes(types);
     _generateDirectivesData(directives);
   }
