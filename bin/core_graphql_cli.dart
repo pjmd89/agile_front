@@ -144,9 +144,9 @@ Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
   final builderGenerator = BuilderGenerator(libRoot: libRoot);
   final operationGenerator = OperationGenerator(libRoot: libRoot);
   try {
-    final types = await introspector.fetchTypes(endpointUrl);
-    modelGenerator.generateModelsFromTypes(types);
-    builderGenerator.generateBuildersFromTypes(types);
+    final types = await introspector.fetchSchema(endpointUrl);
+    modelGenerator.generateModelsFromSchema(types);
+    builderGenerator.generateBuildersFromTypes(types['types'] as List);
     operationGenerator.generateOperationsFromSchema({'types': types});
   } catch (e) {
     print('Error durante la introspección/generación: $e');

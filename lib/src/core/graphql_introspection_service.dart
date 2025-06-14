@@ -108,4 +108,27 @@ class GraphQLIntrospectionService {
       );
     }
   }
+
+  Future<Map<String, dynamic>> fetchSchema(String endpointUrl) async {
+    final response =
+        await HttpClient().postUrl(Uri.parse(endpointUrl))
+          ..headers.contentType = ContentType.json
+          ..write(
+            jsonEncode({'query': introspectionQuery.replaceAll("\n", " ")}),
+          );
+    final httpResponse = await response.close();
+    final responseBody = await utf8.decoder.bind(httpResponse).join();
+    if (httpResponse.statusCode == 200) {
+      final data = jsonDecode(responseBody);
+      final schema = data['data']?['__schema'] ?? {};
+      return {
+        'types': schema['types'] ?? [],
+        'directives': schema['directives'] ?? [],
+      };
+    } else {
+      throw Exception(
+        'Error al obtener el esquema: \\${httpResponse.statusCode}\\n$responseBody',
+      );
+    }
+  }
 }
