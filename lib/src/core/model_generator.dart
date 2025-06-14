@@ -375,7 +375,39 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          buffer.writeln('    $dartField,');
+          // Siempre tipo nullable para los parámetros del constructor
+          String dartType = 'String?';
+          if (field['type'] != null) {
+            final fieldType = field['type'];
+            dynamic t = fieldType;
+            if (t['kind'] == 'NON_NULL') {
+              t = t['ofType'];
+            }
+            if (t is Map && t['kind'] == 'ENUM') {
+              dartType = t['name'] + '?';
+            } else if (t is Map && (t['kind'] == 'OBJECT' || t['kind'] == 'INPUT_OBJECT')) {
+              dartType = t['name'] + '?';
+            } else if (t is Map && t['kind'] == 'LIST') {
+              String innerType = _mapGraphQLTypeToDart(t['ofType']);
+              dartType = 'List<$innerType>?';
+            } else if (t is Map && t['kind'] == 'SCALAR') {
+              switch (t['name']) {
+                case 'String':
+                  dartType = 'String?';
+                  break;
+                case 'Boolean':
+                  dartType = 'bool?';
+                  break;
+                case 'Int':
+                case 'Float':
+                  dartType = 'num?';
+                  break;
+                default:
+                  dartType = 'String?';
+              }
+            }
+          }
+          buffer.writeln('    $dartType $dartField,');
         }
         buffer.writeln('  }) {');
         for (final field in fields) {
