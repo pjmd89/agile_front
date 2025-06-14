@@ -371,7 +371,8 @@ class ModelGenerator {
         }
         buffer.writeln('  $className({');
         for (final field in fields) {
-          var dartField = _dartFieldName(field['name']);
+          final fieldName = field['name'];
+          var dartField = _dartFieldName(fieldName);
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
@@ -548,12 +549,12 @@ class ModelGenerator {
     }
     final exportFiles = <String>[];
     for (final d in directives) {
-      final name = d['name'].toString().toLowerCase();
-      final fileName = name.replaceAll(RegExp(r'[^a-z0-9_]'), '_') + '_directive.dart';
+      final rawName = d['name'].toString();
+      final fileName = rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_').toLowerCase() + '.dart';
+      final constName = _toCamelCase(rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_'));
       final buffer = StringBuffer();
       buffer.writeln('// GENERATED FILE. NO EDITAR MANUALMENTE.');
       buffer.writeln('import "directive_model.dart";');
-      final constName = name.replaceAll(RegExp(r'[^a-z0-9_]'), '_') + 'Directive';
       buffer.writeln('const DirectiveModel $constName = DirectiveModel(');
       buffer.writeln('  name: ${_dartString(d['name'])},');
       buffer.writeln('  description: ${_dartString(d['description'])},');
@@ -583,6 +584,12 @@ class ModelGenerator {
     }
     barrel.writeAsStringSync(buffer.toString());
     print('  + Barrel de directivas actualizado: ${barrel.path}');
+  }
+
+  String _toCamelCase(String input) {
+    if (input.isEmpty) return input;
+    final parts = input.split('_');
+    return parts.first.toLowerCase() + parts.skip(1).map((e) => e.isNotEmpty ? e[0].toUpperCase() + e.substring(1).toLowerCase() : '').join();
   }
 
   String _dartString(dynamic value) {
