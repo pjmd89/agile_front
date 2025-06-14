@@ -134,20 +134,45 @@ class ModelGenerator {
               dartType = enumTypeName + '?';
             } else {
               dartType = _mapGraphQLTypeToDart(field['type']);
-              if (!dartType.trim().endsWith('?')) {
-                dartType = dartType + '?';
-              }
             }
           }
-          buffer.writeln('  final $dartType $dartField;');
+          // Si es String, debe ser no nulo
+          if (dartType == 'String' || dartType == 'String?') {
+            buffer.writeln('  final String $dartField;');
+          } else {
+            buffer.writeln('  final $dartType $dartField;');
+          }
         }
         buffer.writeln('  $className({');
         for (final field in fields) {
-          var dartField = _dartFieldName(field['name']);
+          final fieldName = field['name'];
+          var dartField = _dartFieldName(fieldName);
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          buffer.writeln('    this.$dartField,');
+          // Determinar tipo para saber si es String no nulo
+          String dartType = 'String?';
+          if (field['type'] != null) {
+            final fieldType = field['type'];
+            String? enumTypeName;
+            dynamic t = fieldType;
+            while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
+              t = t['ofType'];
+            }
+            if (t is Map && t['kind'] == 'ENUM') {
+              enumTypeName = t['name'];
+            }
+            if (enumTypeName != null) {
+              dartType = enumTypeName + '?';
+            } else {
+              dartType = _mapGraphQLTypeToDart(field['type']);
+            }
+          }
+          if (dartType == 'String' || dartType == 'String?') {
+            buffer.writeln('    this.$dartField = "",');
+          } else {
+            buffer.writeln('    this.$dartField,');
+          }
         }
         buffer.writeln('  });');
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
