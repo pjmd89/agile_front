@@ -410,6 +410,32 @@ class ModelGenerator {
         print('  + Input generado: $inputOutPath');
       }
     }
+    // --- Generar main.dart (barrel file) para entidades ---
+    final entitiesDir = Directory('$libRoot/src/domain/entities');
+    if (entitiesDir.existsSync()) {
+      final buffer = StringBuffer();
+      buffer.writeln('// GENERATED BARREL FILE. NO EDITAR MANUALMENTE.');
+      buffer.writeln('// Exporta todos los modelos, inputs y enums con alias camelCase\n');
+      final dartFiles = <File>[];
+      void collectDartFiles(Directory dir) {
+        for (final entity in dir.listSync(recursive: false)) {
+          if (entity is File && entity.path.endsWith('.dart') && !entity.path.endsWith('main.dart')) {
+            dartFiles.add(entity);
+          } else if (entity is Directory) {
+            collectDartFiles(entity);
+          }
+        }
+      }
+      collectDartFiles(entitiesDir);
+      for (final file in dartFiles) {
+        final relPath = file.path.replaceFirst(entitiesDir.path + '/', '');
+        final alias = _toCamelCase(file.uri.pathSegments.last.replaceAll('.dart', ''));
+        buffer.writeln("export './$relPath' as $alias;");
+      }
+      final mainFile = File('${entitiesDir.path}/main.dart');
+      mainFile.writeAsStringSync(buffer.toString());
+      print('  + Barrel generado: ${mainFile.path}');
+    }
   }
 }
 
@@ -430,4 +456,12 @@ String? _extractCustomTypeName(Map? type) {
     return t['name'];
   }
   return null;
+}
+
+// Función auxiliar para convertir a camelCase
+String _toCamelCase(String input) {
+  return input.split('_').map((part) {
+    final lower = part.toLowerCase();
+    return lower[0].toUpperCase() + lower.substring(1);
+  }).join('');
 }
