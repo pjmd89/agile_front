@@ -420,15 +420,17 @@ class ModelGenerator {
           }
           // Si la asignación será directa (this.campo = campo;), el parámetro es required y no-nullable
           if (defaultValue == 'null') {
-            // Obtener tipo Dart no-nullable
             String dartType = _mapGraphQLTypeToDart(field['type']);
             if (dartType.endsWith('?')) {
               dartType = dartType.substring(0, dartType.length - 1);
             }
             buffer.writeln('    required $dartType $dartField,');
           } else {
-            // Obtener tipo Dart nullable
+            // El parámetro debe ser nullable (con ?), sin required
             String dartType = _mapGraphQLTypeToDart(field['type']);
+            if (!dartType.endsWith('?')) {
+              dartType = dartType + '?';
+            }
             buffer.writeln('    $dartType $dartField,');
           }
         }
