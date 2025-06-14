@@ -252,6 +252,28 @@ class ModelGenerator {
           inputOutPath = '$libRoot/src/domain/entities/inputs/${className.toLowerCase()}_input.dart';
         }
         final buffer = StringBuffer();
+        // Buscar imports necesarios para INPUT_OBJECT y ENUM
+        final Set<String> inputObjectTypes = {};
+        final Set<String> enumTypes = {};
+        for (final field in fields) {
+          dynamic t = field['type'];
+          while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
+            t = t['ofType'];
+          }
+          if (t is Map && t['kind'] == 'INPUT_OBJECT') {
+            inputObjectTypes.add(t['name']);
+          } else if (t is Map && t['kind'] == 'ENUM') {
+            enumTypes.add(t['name']);
+          }
+        }
+        // Importar otros inputs relacionados
+        for (final inputName in inputObjectTypes) {
+          buffer.writeln('import "./${inputName.toLowerCase()}_input.dart";');
+        }
+        // Importar enums relacionados
+        for (final enumName in enumTypes) {
+          buffer.writeln('import "../../../enums/${enumName.toLowerCase()}_enum.dart";');
+        }
         buffer.writeln('import "package:flutter/foundation.dart";');
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_input.g.dart";');
