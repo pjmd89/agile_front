@@ -5,6 +5,28 @@ class GraphQLIntrospectionService {
   static const String introspectionQuery = '''
     query IntrospectionQuery {
       __schema {
+        directives {
+          name
+          description
+          locations
+          args {
+            name
+            description
+            type {
+              kind
+              name
+              ofType {
+                kind
+                name
+                ofType {
+                  kind
+                  name
+                }
+              }
+            }
+            defaultValue
+          }
+        }
         types {
           name
           kind

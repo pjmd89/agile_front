@@ -525,6 +525,58 @@ class ModelGenerator {
       mainFile.writeAsStringSync(buffer.toString());
       print('  + Barrel generado: ${mainFile.path}');
     }
+    // --- Generar modelos para DIRECTIVAS ---
+    final directivesDir = Directory('$libRoot/src/domain/entities/directives');
+    if (!directivesDir.existsSync()) {
+      directivesDir.createSync(recursive: true);
+    }
+    final directiveModelBuffer = StringBuffer();
+    directiveModelBuffer.writeln('// GENERATED. NO EDITAR MANUALMENTE.');
+    directiveModelBuffer.writeln('// Modelo para una directiva GraphQL');
+    directiveModelBuffer.writeln("import 'package:json_annotation/json_annotation.dart';");
+    directiveModelBuffer.writeln("part 'directive_model.g.dart';");
+    directiveModelBuffer.writeln('');
+    directiveModelBuffer.writeln('@JsonSerializable()');
+    directiveModelBuffer.writeln('class DirectiveModel {');
+    directiveModelBuffer.writeln('  final String name;');
+    directiveModelBuffer.writeln('  final String? description;');
+    directiveModelBuffer.writeln('  final List<String> locations;');
+    directiveModelBuffer.writeln('  final List<DirectiveArgModel> args;');
+    directiveModelBuffer.writeln('');
+    directiveModelBuffer.writeln('  DirectiveModel({required this.name, this.description, required this.locations, required this.args});');
+    directiveModelBuffer.writeln('  factory DirectiveModel.fromJson(Map<String, dynamic> json) => _\$DirectiveModelFromJson(json);');
+    directiveModelBuffer.writeln('  Map<String, dynamic> toJson() => _\$DirectiveModelToJson(this);');
+    directiveModelBuffer.writeln('}');
+    directiveModelBuffer.writeln('');
+    directiveModelBuffer.writeln('@JsonSerializable()');
+    directiveModelBuffer.writeln('class DirectiveArgModel {');
+    directiveModelBuffer.writeln('  final String name;');
+    directiveModelBuffer.writeln('  final String? description;');
+    directiveModelBuffer.writeln('  final GraphQLTypeRef type;');
+    directiveModelBuffer.writeln('  final String? defaultValue;');
+    directiveModelBuffer.writeln('');
+    directiveModelBuffer.writeln('  DirectiveArgModel({required this.name, this.description, required this.type, this.defaultValue});');
+    directiveModelBuffer.writeln('  factory DirectiveArgModel.fromJson(Map<String, dynamic> json) => _\$DirectiveArgModelFromJson(json);');
+    directiveModelBuffer.writeln('  Map<String, dynamic> toJson() => _\$DirectiveArgModelToJson(this);');
+    directiveModelBuffer.writeln('}');
+    directiveModelBuffer.writeln('');
+    directiveModelBuffer.writeln('@JsonSerializable()');
+    directiveModelBuffer.writeln('class GraphQLTypeRef {');
+    directiveModelBuffer.writeln('  final String? kind;');
+    directiveModelBuffer.writeln('  final String? name;');
+    directiveModelBuffer.writeln('  final GraphQLTypeRef? ofType;');
+    directiveModelBuffer.writeln('');
+    directiveModelBuffer.writeln('  GraphQLTypeRef({this.kind, this.name, this.ofType});');
+    directiveModelBuffer.writeln('  factory GraphQLTypeRef.fromJson(Map<String, dynamic> json) => _\$GraphQLTypeRefFromJson(json);');
+    directiveModelBuffer.writeln('  Map<String, dynamic> toJson() => _\$GraphQLTypeRefToJson(this);');
+    directiveModelBuffer.writeln('}');
+    final directiveModelFile = File('${directivesDir.path}/directive_model.dart');
+    directiveModelFile.writeAsStringSync(directiveModelBuffer.toString());
+    // Barrel para directivas
+    final directivesBarrel = File('${directivesDir.path}/main.dart');
+    directivesBarrel.writeAsStringSync("// GENERATED BARREL FILE. NO EDITAR MANUALMENTE.\nexport 'directive_model.dart';\n");
+    print('  + Modelo de directiva generado: ${directiveModelFile.path}');
+    print('  + Barrel de directivas generado: ${directivesBarrel.path}');
   }
 }
 
