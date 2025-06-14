@@ -260,14 +260,8 @@ class ModelGenerator {
             enumTypes.add(t['name']);
           }
         }
-        // Importar otros inputs relacionados
-        for (final inputName in inputObjectTypes) {
-          buffer.writeln('import "./${inputName.toLowerCase()}_input.dart";');
-        }
-        // Importar enums relacionados
-        for (final enumName in enumTypes) {
-          buffer.writeln('import "../../../enums/${enumName.toLowerCase()}_enum.dart";');
-        }
+        
+        buffer.writeln('import "/src/domain/entities/main.dart";');
         buffer.writeln('import "package:flutter/foundation.dart";');
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_input.g.dart";');
