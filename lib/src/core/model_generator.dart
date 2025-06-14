@@ -204,7 +204,7 @@ class ModelGenerator {
           } else if (isNonNull && (dartType.endsWith('Input') || dartType.endsWith('Object') || dartType.endsWith('Enum'))) {
             // Inicializar con el constructor por defecto
             final typeName = dartType.replaceAll('?', '');
-            buffer.writeln('    this.$dartField = ${typeName}(),');
+            buffer.writeln('    this.$dartField = const $typeName(),');
           } else {
             buffer.writeln('    this.$dartField,');
           }
@@ -350,7 +350,6 @@ class ModelGenerator {
               case 'OBJECT':
               case 'INPUT_OBJECT':
                 dartType = t['name'] + (isNullable ? '?' : '');
-                if (!isNullable) fieldInitializer = ' = ${t['name']}()';
                 break;
               case 'LIST':
                 String innerType = _mapGraphQLTypeToDart(t['ofType']);
