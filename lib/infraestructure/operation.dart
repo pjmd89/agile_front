@@ -1,4 +1,4 @@
 abstract class Operation{
   String build();
-  Object result();
+  Object result(Map<String, dynamic> data);
 }
