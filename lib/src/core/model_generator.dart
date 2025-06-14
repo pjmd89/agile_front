@@ -95,16 +95,8 @@ class ModelGenerator {
             }
           }
         }
-        // Importar modelos relacionados
-        for (final typeName in customTypes) {
-          buffer.writeln('import "../${typeName.toLowerCase()}/${typeName.toLowerCase()}_model.dart";');
-        }
-        // Importar enums relacionados
-        for (final enumName in enumTypes) {
-          buffer.writeln('import "../../enums/${enumName.toLowerCase()}_enum.dart";');
-        }
-        // Importar todos los tipos y enums desde el barrel file usando ruta absoluta relativa al proyecto
-        buffer.writeln('import "src/domain/entities/main.dart";');
+        
+        buffer.writeln('import "/src/domain/entities/main.dart";');
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_model.g.dart";');
         buffer.writeln('@JsonSerializable()');
