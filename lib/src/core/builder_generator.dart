@@ -37,6 +37,21 @@ class BuilderGenerator {
             buffer.writeln('  ${className}FieldsBuilder $dartField() { _fields.add("$fieldName"); return this; }');
           }
         }
+        // Importar main.dart si algún campo es objeto
+        bool needsMainImport = false;
+        for (final field in fields) {
+          dynamic t = field['type'];
+          while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
+            t = t['ofType'];
+          }
+          if (t is Map && t['kind'] == 'OBJECT') {
+            needsMainImport = true;
+            break;
+          }
+        }
+        if (needsMainImport) {
+          buffer.writeln("import 'main.dart';");
+        }
         buffer.writeln('  String build() => _fields.join(" ");');
         buffer.writeln('}');
         final outPath = '$outDir/${className.toLowerCase()}_fields_builder.dart';
