@@ -69,18 +69,32 @@ class OperationGenerator {
         final fileName = '${opName.toLowerCase()}_${operationType}.dart';
         final filePath = '${entityDir.path}/$fileName';
         final file = File(filePath);
-        // Por ahora solo generamos el string GraphQL de la operación
-        final gqlString = _buildGraphQLOperationString(operationType, op);
-        file.writeAsStringSync(gqlString);
+        // Generar la clase de operación usando builder si corresponde
+        final opClass = _buildOperationClass(operationType, op);
+        file.writeAsStringSync(opClass);
         print('    + Archivo generado: $filePath');
       }
     }
   }
 
-  String _buildGraphQLOperationString(String operationType, Map op) {
+  String _buildOperationClass(String operationType, Map op) {
     final name = op['name'] as String;
     final className = _capitalize(_toCamelCase(name)) + _capitalize(operationType);
     final args = op['args'] as List? ?? [];
+    // Obtener el tipo de retorno de la operación
+    final returnType = op['type'];
+    String? returnTypeName;
+    String? builderType;
+    dynamic t = returnType;
+    while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
+      t = t['ofType'];
+    }
+    if (t is Map) {
+      if (t['kind'] == 'OBJECT') {
+        returnTypeName = t['name'];
+        builderType = '${returnTypeName}FieldsBuilder';
+      }
+    }
     // Definir campos y parámetros del constructor
     final fields = <String>[];
     final params = <String>[];
@@ -91,19 +105,34 @@ class OperationGenerator {
       fields.add('  final $dartType $argName;');
       params.add(isRequired ? 'required this.$argName' : 'this.$argName');
     }
-    final fieldsStr = fields.join('\n');
-    final paramsStr = params.join(', ');
+    // Agregar el builder como parámetro obligatorio si hay tipo de retorno objeto
+    String builderField = '';
+    String builderParam = '';
+    String builderUsage = '';
+    String importBuilder = '';
+    if (builderType != null) {
+      builderField = '  final $builderType builder;';
+      builderParam = 'required this.builder';
+      builderUsage = '\n    final fields = builder.build();';
+      importBuilder = "import '../../operation/fields_builders/main.dart';\n";
+    }
+    final fieldsStr = [if (builderField.isNotEmpty) builderField, ...fields].join('\n');
+    final paramsStr = [if (builderParam.isNotEmpty) builderParam, ...params].join(', ');
+    // Construir el string de campos para la operación
     return """
-class $className {
+${importBuilder}class $className {
 $fieldsStr
 
   $className({$paramsStr});
 
-  static const String operation = '''
+  String buildOperation() {
+    ${builderUsage.isNotEmpty ? builderUsage : ''}
+    return '''
 $operationType $name {
-  // ...campos...
+  \\${builderType != null ? 'fields' : ''}
 }
 ''';
+  }
 }
 """;
   }
