@@ -134,6 +134,9 @@ class ModelGenerator {
               dartType = enumTypeName + '?';
             } else {
               dartType = _mapGraphQLTypeToDart(field['type']);
+              if (!dartType.trim().endsWith('?')) {
+                dartType = dartType + '?';
+              }
             }
           }
           // Si es String, debe ser no nulo
