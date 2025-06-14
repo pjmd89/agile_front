@@ -450,11 +450,3 @@ String? _extractCustomTypeName(Map? type) {
   }
   return null;
 }
-
-// Función auxiliar para convertir a camelCase
-String _toCamelCase(String input) {
-  return input.split('_').map((part) {
-    final lower = part.toLowerCase();
-    return lower[0].toUpperCase() + lower.substring(1);
-  }).join('');
-}
