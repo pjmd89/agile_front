@@ -535,41 +535,53 @@ class ModelGenerator {
   }
 
   void _generateDirectivesData(List directives) {
-    if (directives.isEmpty) {
-      print('No se encontraron directivas en el esquema.');
-      return;
-    }
     final dir = Directory('$libRoot/src/domain/entities/directives');
     dir.createSync(recursive: true);
-    final buffer = StringBuffer();
-    buffer.writeln('// GENERATED FILE. NO EDITAR MANUALMENTE.');
-    buffer.writeln('import "directive_model.dart";');
-    buffer.writeln('final List<DirectiveModel> allDirectives = [');
-    for (final d in directives) {
-      buffer.writeln('  DirectiveModel(');
-      buffer.writeln('    name: ${_dartString(d['name'])},');
-      buffer.writeln('    description: ${_dartString(d['description'])},');
-      buffer.writeln('    locations: ${_dartListString(d['locations'])},');
-      buffer.writeln('    args: [');
-      for (final arg in (d['args'] ?? [])) {
-        buffer.writeln('      DirectiveArgModel(');
-        buffer.writeln('        name: ${_dartString(arg['name'])},');
-        buffer.writeln('        description: ${_dartString(arg['description'])},');
-        buffer.writeln('        type: ${_typeRefFromIntrospection(arg['type'])},');
-        buffer.writeln('        defaultValue: ${_dartString(arg['defaultValue'])},');
-        buffer.writeln('      ),');
-      }
-      buffer.writeln('    ],');
-      buffer.writeln('  ),');
+    if (directives.isEmpty) {
+      print('No se encontraron directivas en el esquema.');
+      // Aún así, crear barrel mínimo
+      final barrel = File('${dir.path}/main.dart');
+      final barrelContent = "export 'directive_model.dart';\n";
+      barrel.writeAsStringSync(barrelContent);
+      print('  + Barrel de directivas actualizado: ${barrel.path}');
+      return;
     }
-    buffer.writeln('];');
-    final outFile = File('${dir.path}/directives_data.dart');
-    outFile.writeAsStringSync(buffer.toString());
-    print('  + Archivo de datos de directivas generado: ${outFile.path}');
+    final exportFiles = <String>[];
+    for (final d in directives) {
+      final name = d['name'].toString().toLowerCase();
+      final fileName = name.replaceAll(RegExp(r'[^a-z0-9_]'), '_') + '_directive.dart';
+      final buffer = StringBuffer();
+      buffer.writeln('// GENERATED FILE. NO EDITAR MANUALMENTE.');
+      buffer.writeln('import "directive_model.dart";');
+      final constName = name.replaceAll(RegExp(r'[^a-z0-9_]'), '_') + 'Directive';
+      buffer.writeln('const DirectiveModel $constName = DirectiveModel(');
+      buffer.writeln('  name: ${_dartString(d['name'])},');
+      buffer.writeln('  description: ${_dartString(d['description'])},');
+      buffer.writeln('  locations: ${_dartListString(d['locations'])},');
+      buffer.writeln('  args: [');
+      for (final arg in (d['args'] ?? [])) {
+        buffer.writeln('    DirectiveArgModel(');
+        buffer.writeln('      name: ${_dartString(arg['name'])},');
+        buffer.writeln('      description: ${_dartString(arg['description'])},');
+        buffer.writeln('      type: ${_typeRefFromIntrospection(arg['type'])},');
+        buffer.writeln('      defaultValue: ${_dartString(arg['defaultValue'])},');
+        buffer.writeln('    ),');
+      }
+      buffer.writeln('  ],');
+      buffer.writeln(');');
+      final outFile = File('${dir.path}/$fileName');
+      outFile.writeAsStringSync(buffer.toString());
+      exportFiles.add(fileName);
+      print('  + Directiva generada: ${outFile.path}');
+    }
     // Actualizar barrel file
     final barrel = File('${dir.path}/main.dart');
-    final barrelContent = "export 'directive_model.dart';\nexport 'directives_data.dart';\n";
-    barrel.writeAsStringSync(barrelContent);
+    final buffer = StringBuffer();
+    buffer.writeln("export 'directive_model.dart';");
+    for (final file in exportFiles) {
+      buffer.writeln("export '$file';");
+    }
+    barrel.writeAsStringSync(buffer.toString());
     print('  + Barrel de directivas actualizado: ${barrel.path}');
   }
 
