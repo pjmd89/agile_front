@@ -29,6 +29,7 @@ class GraphQLIntrospectionService {
         }
         types {
           name
+          description
           kind
           fields {
             name
