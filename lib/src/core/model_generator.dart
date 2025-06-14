@@ -169,89 +169,37 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          // Determinar tipo para saber si es String, bool, num, List, objeto, enum, y si es nullable
+          // Determinar tipo para saber si es String, bool, num o List no nulo
           String dartType = 'String?';
           if (field['type'] != null) {
             final fieldType = field['type'];
             String? enumTypeName;
             dynamic t = fieldType;
-            bool isNullable = true;
-            if (t['kind'] == 'NON_NULL') {
-              isNullable = false;
+            while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
               t = t['ofType'];
             }
             if (t is Map && t['kind'] == 'ENUM') {
               enumTypeName = t['name'];
-              dartType = (enumTypeName != null ? enumTypeName : 'dynamic') + (isNullable ? '?' : '');
-            } else if (t is Map && (t['kind'] == 'OBJECT' || t['kind'] == 'INPUT_OBJECT')) {
-              dartType = (t['name'] ?? 'dynamic') + (isNullable ? '?' : '');
-            } else if (t is Map && t['kind'] == 'LIST') {
-              String innerType = _mapGraphQLTypeToDart(t['ofType']);
-              dartType = 'List<$innerType>' + (isNullable ? '?' : '');
+            }
+            if (enumTypeName != null) {
+              dartType = enumTypeName + '?';
             } else {
               dartType = _mapGraphQLTypeToDart(field['type']);
-              if (!dartType.trim().endsWith('?') && dartType != 'String' && dartType != 'bool' && dartType != 'num') {
-                dartType = dartType + '?';
-              }
             }
           }
-          buffer.writeln('    $dartType $dartField,');
-        }
-        buffer.writeln('  }) {');
-        for (final field in fields) {
-          var dartField = _dartFieldName(field['name']);
-          if (_isReserved(dartField)) {
-            dartField = '${dartField}_';
-          }
-          // Determinar valor por defecto para la asignación
-          String defaultValue;
-          bool isNullable = true;
-          dynamic t = field['type'];
-          if (t['kind'] == 'NON_NULL') {
-            isNullable = false;
-            t = t['ofType'];
-          }
-          if (t is Map) {
-            switch (t['kind']) {
-              case 'SCALAR':
-                switch (t['name']) {
-                  case 'String':
-                    defaultValue = '""';
-                    break;
-                  case 'Boolean':
-                    defaultValue = 'false';
-                    break;
-                  case 'Int':
-                  case 'Float':
-                    defaultValue = '0';
-                    break;
-                  default:
-                    defaultValue = '""';
-                }
-                break;
-              case 'ENUM':
-                defaultValue = isNullable ? 'null' : '${t['name']}.values.first';
-                break;
-              case 'OBJECT':
-              case 'INPUT_OBJECT':
-                defaultValue = isNullable ? 'null' : '${t['name']}()';
-                break;
-              case 'LIST':
-                defaultValue = isNullable ? 'null' : 'const []';
-                break;
-              default:
-                defaultValue = '""';
-            }
+          if (dartType == 'String' || dartType == 'String?') {
+            buffer.writeln('    this.$dartField = "",');
+          } else if (dartType == 'bool' || dartType == 'bool?') {
+            buffer.writeln('    this.$dartField = false,');
+          } else if (dartType == 'num' || dartType == 'num?') {
+            buffer.writeln('    this.$dartField = 0,');
+          } else if (dartType.startsWith('List<')) {
+            buffer.writeln('    this.$dartField = const [],');
           } else {
-            defaultValue = 'null';
-          }
-          if (defaultValue == 'null') {
-            buffer.writeln('    this.$dartField = $dartField;');
-          } else {
-            buffer.writeln('    this.$dartField = $dartField ?? $defaultValue;');
+            buffer.writeln('    this.$dartField,');
           }
         }
-        buffer.writeln('  }');
+        buffer.writeln('  });');
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
         buffer.writeln('}');
@@ -423,38 +371,11 @@ class ModelGenerator {
         }
         buffer.writeln('  $className({');
         for (final field in fields) {
-          final fieldName = field['name'];
-          var dartField = _dartFieldName(fieldName);
+          var dartField = _dartFieldName(field['name']);
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          // Determinar tipo para saber si es String, bool, num, List, objeto, enum, y si es nullable
-          String dartType = 'String?';
-          if (field['type'] != null) {
-            final fieldType = field['type'];
-            String? enumTypeName;
-            dynamic t = fieldType;
-            bool isNullable = true;
-            if (t['kind'] == 'NON_NULL') {
-              isNullable = false;
-              t = t['ofType'];
-            }
-            if (t is Map && t['kind'] == 'ENUM') {
-              enumTypeName = t['name'];
-              dartType = (enumTypeName != null ? enumTypeName : 'dynamic') + (isNullable ? '?' : '');
-            } else if (t is Map && (t['kind'] == 'OBJECT' || t['kind'] == 'INPUT_OBJECT')) {
-              dartType = (t['name'] ?? 'dynamic') + (isNullable ? '?' : '');
-            } else if (t is Map && t['kind'] == 'LIST') {
-              String innerType = _mapGraphQLTypeToDart(t['ofType']);
-              dartType = 'List<$innerType>' + (isNullable ? '?' : '');
-            } else {
-              dartType = _mapGraphQLTypeToDart(field['type']);
-              if (!dartType.trim().endsWith('?') && dartType != 'String' && dartType != 'bool' && dartType != 'num') {
-                dartType = dartType + '?';
-              }
-            }
-          }
-          buffer.writeln('    $dartType $dartField,');
+          buffer.writeln('    $dartField,');
         }
         buffer.writeln('  }) {');
         for (final field in fields) {
