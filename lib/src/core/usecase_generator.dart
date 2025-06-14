@@ -28,15 +28,35 @@ class UseCaseGenerator {
         outDir.createSync(recursive: true);
         print('  + Carpeta creada: \\${outDir.path}');
       }
-      // Aquí puedes agregar la lógica para generar los archivos del usecase
-      // Por ejemplo, un archivo base:
-      final file = File('${outDir.path}/${name.toLowerCase()}_usecase.dart');
-      if (!file.existsSync()) {
-        file.writeAsStringSync('// UseCase generado para $name\n');
-        print('    + Archivo generado: \\${file.path}');
+      // CRUD: create, read, update, delete
+      final crudParts = ['create', 'read', 'update', 'delete'];
+      for (final crud in crudParts) {
+        final fileName = '${crud}_${name.toLowerCase()}_usecase.dart';
+        final className =
+            '${_capitalize(crud)}${_capitalize(name)}Usecase';
+        final file = File('${outDir.path}/$fileName');
+        if (!file.existsSync()) {
+          file.writeAsStringSync('''
+import '/src/domain/operation/fields_builders/main.dart';
+import '/src/domain/operation/main.dart';
+import 'package:agile_front/infraestructure/usecase.dart';
+
+class $className implements UseCase {
+  $className();
+  @override
+  String build() {
+    // TODO: Implementar lógica de $crud para $name
+    return '';
+  }
+}
+''');
+          print('    + Archivo generado: \\${file.path}');
+        }
       }
     }
   }
 
   // Puedes agregar métodos auxiliares para generar archivos, carpetas, etc.
 }
+
+String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
