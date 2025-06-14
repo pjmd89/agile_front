@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import '../lib/src/core/graphql_introspection_service.dart';
 import '../lib/src/core/model_generator.dart';
+import '../lib/src/core/operation_generator.dart';
 
 void main(List<String> arguments) async {
   final parser =
@@ -139,9 +140,12 @@ Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
   print('Realizando introspección de esquema en: $endpointUrl');
   final introspector = GraphQLIntrospectionService();
   final modelGenerator = ModelGenerator(libRoot: libRoot);
+  final operationGenerator = OperationGenerator(libRoot: libRoot);
   try {
     final types = await introspector.fetchTypes(endpointUrl);
     modelGenerator.generateModelsFromTypes(types);
+    // Llamar al generador de operaciones (por ahora pasamos el schema como Map)
+    operationGenerator.generateOperationsFromSchema({'types': types});
   } catch (e) {
     print('Error durante la introspección/generación: $e');
   }
