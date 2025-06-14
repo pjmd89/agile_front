@@ -415,7 +415,7 @@ class ModelGenerator {
     if (entitiesDir.existsSync()) {
       final buffer = StringBuffer();
       buffer.writeln('// GENERATED BARREL FILE. NO EDITAR MANUALMENTE.');
-      buffer.writeln('// Exporta todos los modelos, inputs y enums con alias camelCase\n');
+      buffer.writeln('// Exporta todos los modelos, inputs y enums\n');
       final dartFiles = <File>[];
       void collectDartFiles(Directory dir) {
         for (final entity in dir.listSync(recursive: false)) {
@@ -429,8 +429,7 @@ class ModelGenerator {
       collectDartFiles(entitiesDir);
       for (final file in dartFiles) {
         final relPath = file.path.replaceFirst(entitiesDir.path + '/', '');
-        final alias = _toCamelCase(file.uri.pathSegments.last.replaceAll('.dart', ''));
-        buffer.writeln("export './$relPath' as $alias;");
+        buffer.writeln("export './$relPath';");
       }
       final mainFile = File('${entitiesDir.path}/main.dart');
       mainFile.writeAsStringSync(buffer.toString());
