@@ -222,14 +222,10 @@ class ${className}FieldsBuilder {
           }
           if (t is Map && t['kind'] == 'OBJECT') {
             final typeName = t['name'];
-            buffer.writeln('  ${className}FieldsBuilder $dartField([void Function(${typeName}FieldsBuilder)? builder]) {');
-            buffer.writeln('    if (builder != null) {');
-            buffer.writeln('      final child = ${typeName}FieldsBuilder();');
-            buffer.writeln('      builder(child);');
-            buffer.writeln('      _fields.add("$fieldName { \${child.build()} }");');
-            buffer.writeln('    } else {');
-            buffer.writeln('      _fields.add("$fieldName");');
-            buffer.writeln('    }');
+            buffer.writeln('  ${className}FieldsBuilder $dartField(void Function(${typeName}FieldsBuilder) builder) {');
+            buffer.writeln('    final child = ${typeName}FieldsBuilder();');
+            buffer.writeln('    builder(child);');
+            buffer.writeln('    _fields.add("$fieldName { \${child.build()} }");');
             buffer.writeln('    return this;');
             buffer.writeln('  }');
           } else {
