@@ -226,7 +226,7 @@ class ${className}FieldsBuilder {
             buffer.writeln('    if (builder != null) {');
             buffer.writeln('      final child = ${typeName}FieldsBuilder();');
             buffer.writeln('      builder(child);');
-            buffer.writeln('      _fields.add("$fieldName { {child.build()} }");');
+            buffer.writeln('      _fields.add("$fieldName { \${child.build()} }");');
             buffer.writeln('    } else {');
             buffer.writeln('      _fields.add("$fieldName");');
             buffer.writeln('    }');
