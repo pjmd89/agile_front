@@ -455,7 +455,9 @@ class ModelGenerator {
       collectDartFiles(entitiesDir);
       for (final file in dartFiles) {
         final relPath = file.path.replaceFirst(entitiesDir.path + '/', '');
-        buffer.writeln("export './$relPath';");
+        if (!relPath.endsWith('.g.dart')) {
+          buffer.writeln("export './$relPath';");
+        }
       }
       final mainFile = File('${entitiesDir.path}/main.dart');
       mainFile.writeAsStringSync(buffer.toString());
