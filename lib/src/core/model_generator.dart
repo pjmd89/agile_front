@@ -532,7 +532,7 @@ class ModelGenerator {
     final types = schema['types'] ?? [];
     final directives = schema['directives'] ?? [];
     generateModelsFromTypes(types);
-    _generateDirectivesData(directives);
+    //_generateDirectivesData(directives);
   }
 
   void _generateDirectivesData(List directives) {
