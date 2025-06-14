@@ -3,7 +3,7 @@
 
 import 'package:args/args.dart';
 import 'dart:io';
-import 'package:path/path.dart' as p;
+//import 'package:path/path.dart' as p;
 import '../lib/src/core/graphql_introspection_service.dart';
 import '../lib/src/core/model_generator.dart';
 import '../lib/src/core/operation_generator.dart';
@@ -82,7 +82,7 @@ void _createBaseStructure(String libRoot) {
       print('  + Carpeta creada: $dir');
     }
   }
-
+  /*
   final files = {
     '$libRoot/core_graphql.dart':
         """// Archivo principal de exportación del core\nlibrary core_graphql;\n""",
@@ -103,7 +103,7 @@ void _createBaseStructure(String libRoot) {
     '$libRoot/src/core/providers/auth_provider.dart':
         '// TODO: Implementar auth_provider.dart\n',
   };
-/*
+
   files.forEach((path, content) {
     final file = File(path);
     // Asegura que el directorio padre exista antes de crear el archivo
@@ -117,7 +117,7 @@ void _createBaseStructure(String libRoot) {
 
   print('Estructura base creada correctamente.');
 }
-
+/*
 void _copyBaseTemplates(String libRoot) {
   final templateDir = Directory('templates/base');
   final destDir = Directory('$libRoot/src/core');
@@ -136,6 +136,7 @@ void _copyBaseTemplates(String libRoot) {
     }
   }
 }
+*/
 
 Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
   print('Realizando introspección de esquema en: $endpointUrl');
