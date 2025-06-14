@@ -7,7 +7,7 @@ import 'package:path/path.dart' as p;
 import '../lib/src/core/graphql_introspection_service.dart';
 import '../lib/src/core/model_generator.dart';
 
-void main(List<String> arguments) {
+void main(List<String> arguments) async {
   final parser =
       ArgParser()
         ..addOption(
@@ -47,7 +47,7 @@ void main(List<String> arguments) {
         return;
       }
       final endpointUrl = argResults.command!.arguments.first;
-      _generateFromGraphQL(endpointUrl, libRoot);
+      await _generateFromGraphQL(endpointUrl, libRoot);
       break;
     default:
       print(
@@ -135,7 +135,7 @@ void _copyBaseTemplates(String libRoot) {
   }
 }
 
-void _generateFromGraphQL(String endpointUrl, String libRoot) async {
+Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
   print('Realizando introspección de esquema en: $endpointUrl');
   final introspector = GraphQLIntrospectionService();
   final modelGenerator = ModelGenerator(libRoot: libRoot);
