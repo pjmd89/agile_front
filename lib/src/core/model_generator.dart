@@ -159,7 +159,11 @@ class ModelGenerator {
             // Quitar el ? para que no sea nullable
             final nonNullableListType = dartType.replaceAll('?', '');
             buffer.writeln('  final $nonNullableListType $dartField;');
-          } else if (isNonNull && (dartType.endsWith('Input') || dartType.endsWith('Input?') || dartType.endsWith('Enum') || dartType.endsWith('Enum?') || dartType.endsWith('Object') || dartType.endsWith('Object?'))) {
+          } else if (isNonNull && (dartType.endsWith('Enum') || dartType.endsWith('Enum?'))) {
+            // Si es un enum no nulo, inicializar con values.first
+            final typeName = dartType.replaceAll('?', '');
+            buffer.writeln('  final $typeName $dartField;');
+          } else if (isNonNull && (dartType.endsWith('Input') || dartType.endsWith('Object'))) {
             // Si es un objeto no nulo, inicializar con el constructor por defecto
             final typeName = dartType.replaceAll('?', '');
             buffer.writeln('  final $typeName $dartField;');
@@ -172,7 +176,7 @@ class ModelGenerator {
           final fieldName = field['name'];
           var dartField = _dartFieldName(fieldName);
           if (_isReserved(dartField)) {
-            dartField = '${dartField}_';
+            dartField = '{dartField}_';
           }
           // Determinar tipo para saber si es String, bool, num o List no nulo
           String dartType = 'String?';
@@ -201,8 +205,10 @@ class ModelGenerator {
             buffer.writeln('    this.$dartField = 0,');
           } else if (dartType.startsWith('List<')) {
             buffer.writeln('    this.$dartField = const [],');
-          } else if (isNonNull && (dartType.endsWith('Input') || dartType.endsWith('Object') || dartType.endsWith('Enum'))) {
-            // Inicializar con el constructor por defecto
+          } else if (isNonNull && (dartType.endsWith('Enum') || dartType.endsWith('Enum?'))) {
+            final typeName = dartType.replaceAll('?', '');
+            buffer.writeln('    this.$dartField = $typeName.values.first,');
+          } else if (isNonNull && (dartType.endsWith('Input') || dartType.endsWith('Object'))) {
             final typeName = dartType.replaceAll('?', '');
             buffer.writeln('    this.$dartField = const $typeName(),');
           } else {
@@ -347,9 +353,13 @@ class ModelGenerator {
                 }
                 break;
               case 'ENUM':
+                dartType = t['name'] + (isNullable ? '?' : '');
+                if (!isNullable) fieldInitializer = ' = ${t['name']}.values.first';
+                break;
               case 'OBJECT':
               case 'INPUT_OBJECT':
                 dartType = t['name'] + (isNullable ? '?' : '');
+                if (!isNullable) fieldInitializer = ' = const ${t['name']}()';
                 break;
               case 'LIST':
                 String innerType = _mapGraphQLTypeToDart(t['ofType']);
@@ -374,15 +384,7 @@ class ModelGenerator {
         for (final field in fields) {
           var dartField = _dartFieldName(field['name']);
           if (_isReserved(dartField)) {
-            dartField = '${dartField}_';
-          }
-          buffer.writeln('    $dartField,');
-        }
-        buffer.writeln('  }) {');
-        for (final field in fields) {
-          var dartField = _dartFieldName(field['name']);
-          if (_isReserved(dartField)) {
-            dartField = '${dartField}_';
+            dartField = '{dartField}_';
           }
           // Determinar valor por defecto para la asignación
           String defaultValue;
@@ -411,9 +413,11 @@ class ModelGenerator {
                 }
                 break;
               case 'ENUM':
+                defaultValue = isNullable ? 'null' : '${t['name']}.values.first';
+                break;
               case 'OBJECT':
               case 'INPUT_OBJECT':
-                defaultValue = 'null';
+                defaultValue = isNullable ? 'null' : 'const ${t['name']}()';
                 break;
               case 'LIST':
                 defaultValue = isNullable ? 'null' : 'const []';
