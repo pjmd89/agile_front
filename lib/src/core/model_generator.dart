@@ -169,13 +169,13 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          // Determinar tipo para saber si es String, bool, num, List, objeto, enum, y si es nullable
+          // Determinar tipo y nullabilidad igual que en la declaración del atributo
           String dartType = 'String?';
+          bool isNullable = true;
           if (field['type'] != null) {
             final fieldType = field['type'];
             String? enumTypeName;
             dynamic t = fieldType;
-            bool isNullable = true;
             if (t['kind'] == 'NON_NULL') {
               isNullable = false;
               t = t['ofType'];
@@ -195,63 +195,10 @@ class ModelGenerator {
               }
             }
           }
-          buffer.writeln('    $dartType $dartField,');
+          final requiredModifier = isNullable ? '' : 'required ';
+          buffer.writeln('    $requiredModifier$this.dartType $dartField,');
         }
-        buffer.writeln('  }) {');
-        for (final field in fields) {
-          var dartField = _dartFieldName(field['name']);
-          if (_isReserved(dartField)) {
-            dartField = '${dartField}_';
-          }
-          // Determinar valor por defecto para la asignación
-          String defaultValue;
-          bool isNullable = true;
-          dynamic t = field['type'];
-          if (t['kind'] == 'NON_NULL') {
-            isNullable = false;
-            t = t['ofType'];
-          }
-          if (t is Map) {
-            switch (t['kind']) {
-              case 'SCALAR':
-                switch (t['name']) {
-                  case 'String':
-                    defaultValue = '""';
-                    break;
-                  case 'Boolean':
-                    defaultValue = 'false';
-                    break;
-                  case 'Int':
-                  case 'Float':
-                    defaultValue = '0';
-                    break;
-                  default:
-                    defaultValue = '""';
-                }
-                break;
-              case 'ENUM':
-                defaultValue = isNullable ? 'null' : '${t['name']}.values.first';
-                break;
-              case 'OBJECT':
-              case 'INPUT_OBJECT':
-                defaultValue = isNullable ? 'null' : '${t['name']}()';
-                break;
-              case 'LIST':
-                defaultValue = isNullable ? 'null' : 'const []';
-                break;
-              default:
-                defaultValue = '""';
-            }
-          } else {
-            defaultValue = 'null';
-          }
-          if (defaultValue == 'null') {
-            buffer.writeln('    this.$dartField = $dartField;');
-          } else {
-            buffer.writeln('    this.$dartField = $dartField ?? $defaultValue;');
-          }
-        }
-        buffer.writeln('  }');
+        buffer.writeln('  });');
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
         buffer.writeln('}');
