@@ -139,13 +139,15 @@ class ModelGenerator {
               }
             }
           }
-          // Si es String, bool o num, debe ser no nulo
+          // Si es String, bool, num o List, debe ser no nulo
           if (dartType == 'String' || dartType == 'String?') {
             buffer.writeln('  final String $dartField;');
           } else if (dartType == 'bool' || dartType == 'bool?') {
             buffer.writeln('  final bool $dartField;');
           } else if (dartType == 'num' || dartType == 'num?') {
             buffer.writeln('  final num $dartField;');
+          } else if (dartType.startsWith('List<')) {
+            buffer.writeln('  final $dartType $dartField;');
           } else {
             buffer.writeln('  final $dartType $dartField;');
           }
@@ -157,7 +159,7 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          // Determinar tipo para saber si es String, bool o num no nulo
+          // Determinar tipo para saber si es String, bool, num o List no nulo
           String dartType = 'String?';
           if (field['type'] != null) {
             final fieldType = field['type'];
@@ -181,6 +183,8 @@ class ModelGenerator {
             buffer.writeln('    this.$dartField = false,');
           } else if (dartType == 'num' || dartType == 'num?') {
             buffer.writeln('    this.$dartField = 0,');
+          } else if (dartType.startsWith('List<')) {
+            buffer.writeln('    this.$dartField = const [],');
           } else {
             buffer.writeln('    this.$dartField,');
           }
