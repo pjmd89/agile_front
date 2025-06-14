@@ -96,7 +96,21 @@ class ModelGenerator {
           }
         }
         
-        buffer.writeln('import "/src/domain/entities/main.dart";');
+        // Detectar si es necesario importar main.dart en modelos (types)
+        bool needsMainImport = false;
+        for (final field in fields) {
+          dynamic t = field['type'];
+          while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
+            t = t['ofType'];
+          }
+          if (t is Map && (t['kind'] == 'INPUT_OBJECT' || t['kind'] == 'ENUM' || t['kind'] == 'OBJECT')) {
+            needsMainImport = true;
+            break;
+          }
+        }
+        if (needsMainImport) {
+          buffer.writeln('import "/src/domain/entities/main.dart";');
+        }
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_model.g.dart";');
         buffer.writeln('@JsonSerializable()');
@@ -261,7 +275,21 @@ class ModelGenerator {
           }
         }
         
-        buffer.writeln('import "/src/domain/entities/main.dart";');
+        // Detectar si es necesario importar main.dart
+        bool needsMainImport = false;
+        for (final field in fields) {
+          dynamic t = field['type'];
+          while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
+            t = t['ofType'];
+          }
+          if (t is Map && (t['kind'] == 'INPUT_OBJECT' || t['kind'] == 'ENUM' || t['kind'] == 'OBJECT')) {
+            needsMainImport = true;
+            break;
+          }
+        }
+        if (needsMainImport) {
+          buffer.writeln('import "/src/domain/entities/main.dart";');
+        }
         buffer.writeln('import "package:flutter/foundation.dart";');
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_input.g.dart";');
