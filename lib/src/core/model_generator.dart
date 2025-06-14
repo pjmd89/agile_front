@@ -215,14 +215,19 @@ class ModelGenerator {
         final enumName = type['name'];
         final values = type['enumValues'] ?? [];
         final buffer = StringBuffer();
+        buffer.writeln('import "package:json_annotation/json_annotation.dart";');
+        buffer.writeln('part "${enumName.toLowerCase()}_enum.g.dart";');
+        buffer.writeln('@JsonEnum(alwaysCreate: true)');
         buffer.writeln('enum $enumName {');
         for (final value in values) {
           final originalName = value['name'];
-          var dartName = originalName;
+          // lowerCamelCase para Dart
+          String dartName = originalName[0].toLowerCase() + originalName.substring(1);
           if (_isReserved(dartName)) {
             dartName = '${dartName}_';
             buffer.writeln('  // "$originalName" es palabra reservada, renombrado a "$dartName"');
           }
+          buffer.writeln('  @JsonValue("$originalName")');
           buffer.writeln('  $dartName,');
         }
         buffer.writeln('}');
