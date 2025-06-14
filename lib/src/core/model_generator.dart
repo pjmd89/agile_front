@@ -558,21 +558,23 @@ class ModelGenerator {
       final buffer = StringBuffer();
       buffer.writeln('// GENERATED FILE. NO EDITAR MANUALMENTE.');
       buffer.writeln('import "../directive_model.dart";');
-      buffer.writeln('final $className = DirectiveModel(');
-      buffer.writeln('  name: ${_dartString(d['name'])},');
-      buffer.writeln('  description: ${_dartString(d['description'])},');
-      buffer.writeln('  locations: ${_dartListString(d['locations'])},');
-      buffer.writeln('  args: [');
+      buffer.writeln('class $className extends DirectiveModel {');
+      buffer.writeln('  const $className() : super(');
+      buffer.writeln('    name: ${_dartString(d['name'])},');
+      buffer.writeln('    description: ${_dartString(d['description'])},');
+      buffer.writeln('    locations: ${_dartListString(d['locations'])},');
+      buffer.writeln('    args: [');
       for (final arg in (d['args'] ?? [])) {
-        buffer.writeln('    DirectiveArgModel(');
-        buffer.writeln('      name: ${_dartString(arg['name'])},');
-        buffer.writeln('      description: ${_dartString(arg['description'])},');
-        buffer.writeln('      type: ${_typeRefFromIntrospection(arg['type'])},');
-        buffer.writeln('      defaultValue: ${_dartString(arg['defaultValue'])},');
-        buffer.writeln('    ),');
+        buffer.writeln('      DirectiveArgModel(');
+        buffer.writeln('        name: ${_dartString(arg['name'])},');
+        buffer.writeln('        description: ${_dartString(arg['description'])},');
+        buffer.writeln('        type: ${_typeRefFromIntrospection(arg['type'])},');
+        buffer.writeln('        defaultValue: ${_dartString(arg['defaultValue'])},');
+        buffer.writeln('      ),');
       }
-      buffer.writeln('  ],');
-      buffer.writeln(');');
+      buffer.writeln('    ],');
+      buffer.writeln('  );');
+      buffer.writeln('}');
       final outFile = File('${subDir.path}/$fileName');
       outFile.writeAsStringSync(buffer.toString());
       exportFiles.add('$folderName/$fileName');
