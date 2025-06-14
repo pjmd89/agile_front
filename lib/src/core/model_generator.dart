@@ -269,6 +269,7 @@ class ModelGenerator {
           }
           // Determinar tipo y valor por defecto
           String dartType;
+          String? fieldInitializer = '';
           bool isNullable = true;
           dynamic t = field['type'];
           if (t['kind'] == 'NON_NULL') {
@@ -281,16 +282,20 @@ class ModelGenerator {
                 switch (t['name']) {
                   case 'String':
                     dartType = isNullable ? 'String?' : 'String';
+                    if (!isNullable) fieldInitializer = ' = ""';
                     break;
                   case 'Boolean':
                     dartType = isNullable ? 'bool?' : 'bool';
+                    if (!isNullable) fieldInitializer = ' = false';
                     break;
                   case 'Int':
                   case 'Float':
                     dartType = isNullable ? 'num?' : 'num';
+                    if (!isNullable) fieldInitializer = ' = 0';
                     break;
                   default:
                     dartType = isNullable ? 'String?' : 'String';
+                    if (!isNullable) fieldInitializer = ' = ""';
                 }
                 break;
               case 'ENUM':
@@ -301,14 +306,16 @@ class ModelGenerator {
               case 'LIST':
                 String innerType = _mapGraphQLTypeToDart(t['ofType']);
                 dartType = 'List<$innerType>' + (isNullable ? '?' : '');
+                if (!isNullable) fieldInitializer = ' = const []';
                 break;
               default:
                 dartType = isNullable ? 'String?' : 'String';
+                if (!isNullable) fieldInitializer = ' = ""';
             }
           } else {
             dartType = 'String?';
           }
-          buffer.writeln('  $dartType _${dartField};');
+          buffer.writeln('  $dartType _${dartField}${fieldInitializer};');
           buffer.writeln('  $dartType get $dartField => _${dartField};');
           buffer.writeln('  set $dartField($dartType value) {');
           buffer.writeln('    _${dartField} = value;');
