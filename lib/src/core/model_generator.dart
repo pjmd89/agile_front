@@ -103,6 +103,8 @@ class ModelGenerator {
         for (final enumName in enumTypes) {
           buffer.writeln('import "../../enums/${enumName.toLowerCase()}_enum.dart";');
         }
+        // Importar todos los tipos y enums desde el barrel file
+        buffer.writeln('import "package:\$projectName/src/domain/entities/main.dart";');
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_model.g.dart";');
         buffer.writeln('@JsonSerializable()');
