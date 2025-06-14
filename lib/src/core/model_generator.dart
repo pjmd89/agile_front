@@ -347,6 +347,9 @@ class ModelGenerator {
                 }
                 break;
               case 'ENUM':
+                dartType = t['name'] + (isNullable ? '?' : '');
+                if (!isNullable) fieldInitializer = ' = ${t['name']}.values.first';
+                break;
               case 'OBJECT':
               case 'INPUT_OBJECT':
                 dartType = t['name'] + (isNullable ? '?' : '');
@@ -412,9 +415,11 @@ class ModelGenerator {
                 }
                 break;
               case 'ENUM':
+                defaultValue = isNullable ? 'null' : '${t['name']}.values.first';
+                break;
               case 'OBJECT':
               case 'INPUT_OBJECT':
-                defaultValue = 'null';
+                defaultValue = isNullable ? 'null' : '${t['name']}()';
                 break;
               case 'LIST':
                 defaultValue = isNullable ? 'null' : 'const []';
