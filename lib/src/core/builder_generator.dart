@@ -16,13 +16,14 @@ class BuilderGenerator {
         final fields = type['fields'] ?? [];
         final buffer = StringBuffer();
         buffer.writeln('// GENERATED. NO EDITAR MANUALMENTE.');
+        // Revisar si realmente necesita importar main.dart (solo si hay al menos un campo tipo OBJECT)
         bool needsMainImport = false;
         for (final field in fields) {
           dynamic t = field['type'];
           while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
             t = t['ofType'];
           }
-          if (t is Map && (t['kind'] == 'INPUT_OBJECT' || t['kind'] == 'ENUM' || t['kind'] == 'OBJECT')) {
+          if (t is Map && t['kind'] == 'OBJECT') {
             needsMainImport = true;
             break;
           }
