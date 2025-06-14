@@ -51,5 +51,31 @@ class BuilderGenerator {
     final barrelFile = File('$outDir/fields_builders.dart');
     barrelFile.writeAsStringSync(barrelBuffer.toString());
     print('  + Barrel actualizado: $outDir/fields_builders.dart');
+
+    // --- Generar main.dart (barrel file) para builders ---
+    final mainBuffer = StringBuffer();
+    mainBuffer.writeln('// GENERATED BARREL FILE. NO EDITAR MANUALMENTE.');
+    mainBuffer.writeln('// Exporta todos los builders de selección de campos GraphQL\n');
+    final outDirAbs = Directory(outDir);
+    if (outDirAbs.existsSync()) {
+      final dartFiles = <File>[];
+      void collectDartFiles(Directory dir) {
+        for (final entity in dir.listSync(recursive: false)) {
+          if (entity is File && entity.path.endsWith('.dart') && !entity.path.endsWith('main.dart')) {
+            dartFiles.add(entity);
+          }
+        }
+      }
+      collectDartFiles(outDirAbs);
+      for (final file in dartFiles) {
+        final relPath = file.path.replaceFirst(outDirAbs.path + '/', '');
+        if (!relPath.endsWith('fields_builders.dart')) {
+          mainBuffer.writeln("export './$relPath';");
+        }
+      }
+      final mainFile = File('${outDirAbs.path}/main.dart');
+      mainFile.writeAsStringSync(mainBuffer.toString());
+      print('  + Barrel main.dart generado: ${mainFile.path}');
+    }
   }
 }
