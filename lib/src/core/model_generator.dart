@@ -375,39 +375,43 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
-          // Siempre tipo nullable para los parámetros del constructor
           String dartType = 'String?';
+          bool isNullable = true;
           if (field['type'] != null) {
-            final fieldType = field['type'];
-            dynamic t = fieldType;
+            dynamic t = field['type'];
             if (t['kind'] == 'NON_NULL') {
+              isNullable = false;
               t = t['ofType'];
             }
             if (t is Map && t['kind'] == 'ENUM') {
-              dartType = t['name'] + '?';
+              dartType = t['name'] + (isNullable ? '?' : '');
             } else if (t is Map && (t['kind'] == 'OBJECT' || t['kind'] == 'INPUT_OBJECT')) {
-              dartType = t['name'] + '?';
+              dartType = t['name'] + (isNullable ? '?' : '');
             } else if (t is Map && t['kind'] == 'LIST') {
               String innerType = _mapGraphQLTypeToDart(t['ofType']);
-              dartType = 'List<$innerType>?';
+              dartType = 'List<$innerType>' + (isNullable ? '?' : '');
             } else if (t is Map && t['kind'] == 'SCALAR') {
               switch (t['name']) {
                 case 'String':
-                  dartType = 'String?';
+                  dartType = isNullable ? 'String?' : 'String';
                   break;
                 case 'Boolean':
-                  dartType = 'bool?';
+                  dartType = isNullable ? 'bool?' : 'bool';
                   break;
                 case 'Int':
                 case 'Float':
-                  dartType = 'num?';
+                  dartType = isNullable ? 'num?' : 'num';
                   break;
                 default:
-                  dartType = 'String?';
+                  dartType = isNullable ? 'String?' : 'String';
               }
             }
           }
-          buffer.writeln('    $dartType $dartField,');
+          if (isNullable) {
+            buffer.writeln('    $dartType $dartField,');
+          } else {
+            buffer.writeln('    required $dartType $dartField,');
+          }
         }
         buffer.writeln('  }) {');
         for (final field in fields) {
@@ -457,7 +461,9 @@ class ModelGenerator {
           } else {
             defaultValue = 'null';
           }
-          if (defaultValue == 'null') {
+          if (!isNullable) {
+            buffer.writeln('    this.$dartField = $dartField;');
+          } else if (defaultValue == 'null') {
             buffer.writeln('    this.$dartField = $dartField;');
           } else {
             buffer.writeln('    this.$dartField = $dartField ?? $defaultValue;');
