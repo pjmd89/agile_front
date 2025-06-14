@@ -34,7 +34,7 @@ class BuilderGenerator {
         buffer.writeln('  final List<String> _fields = [];');
         for (final field in fields) {
           final fieldName = field['name'];
-          final dartField = fieldName;
+          final dartField = _dartFieldName(fieldName);
           dynamic t = field['type'];
           while (t is Map && (t['kind'] == 'NON_NULL' || t['kind'] == 'LIST')) {
             t = t['ofType'];
@@ -91,5 +91,12 @@ class BuilderGenerator {
       mainFile.writeAsStringSync(mainBuffer.toString());
       print('  + Barrel main.dart generado: ${mainFile.path}');
     }
+  }
+
+  String _dartFieldName(String name) {
+    if (name.startsWith('_')) {
+      return name.replaceFirst('_', '');
+    }
+    return name;
   }
 }
