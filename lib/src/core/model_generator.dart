@@ -420,7 +420,11 @@ class ModelGenerator {
           } else {
             defaultValue = 'null';
           }
-          buffer.writeln('    this.$dartField = $dartField ?? $defaultValue;');
+          if (defaultValue == 'null') {
+            buffer.writeln('    this.$dartField = $dartField;');
+          } else {
+            buffer.writeln('    this.$dartField = $dartField ?? $defaultValue;');
+          }
         }
         buffer.writeln('  }');
         buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);');
