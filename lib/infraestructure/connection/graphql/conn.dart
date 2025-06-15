@@ -4,7 +4,7 @@ import 'package:agile_front/infraestructure/operation.dart' as op;
 
 class GraphqlConn extends Service{
   final GraphQLClient _client;
-  GraphqlConn(GraphQLClient client) : _client = client;
+  GraphqlConn({required GraphQLClient client}) : _client = client;
   @override
   operation({required op.Operation operation, required void Function(Object) callback, Map<String, dynamic>? variables}) async{
     final queryVariables = variables ?? {};
