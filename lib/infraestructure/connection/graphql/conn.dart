@@ -13,6 +13,7 @@ class GraphqlConn extends Service{
     log(operation.build());
     final response = await _client.query(
       QueryOptions(
+        operationName: operation.name,
         document: gql(operation.build()), 
         variables: queryVariables,
       ),
