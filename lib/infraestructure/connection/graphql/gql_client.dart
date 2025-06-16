@@ -69,6 +69,7 @@ class GqlClient{
     );
 
     if(isWeb){
+      print("es Web");
       http.Client httpApiClient = http.Client();
       if (httpApiClient is BrowserClient) {
         httpApiClient.withCredentials = true;
@@ -81,6 +82,7 @@ class GqlClient{
       }
     }
     else{
+      print("no es Web");
       _httpApiLink = HttpLink(apiURL, httpClient: ClientWithCookies.createFromEnvironment(env: env));
       apiLink = _authLink.concat(_httpApiLink);
 
