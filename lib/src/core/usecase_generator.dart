@@ -56,7 +56,7 @@ class $className implements UseCase {
     _conn.operation(operation: _operation, callback: callback);
   }
   callback(Object ob) {
-    
+    //final thisObject = ob as {YourEntityType};
   }
 }
 ''');
