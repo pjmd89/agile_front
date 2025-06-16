@@ -18,7 +18,7 @@ class GraphqlConn extends Service{
       final errors = response.exception?.graphqlErrors ?? [];
       if (errors.isNotEmpty) {
         // Handle exceptions here, e.g., log them or show a message
-        //print('GraphQL Errors: ${errors.map((e) => e.message).join(', ')}');
+        return response.exception?.graphqlErrors;
       }
       return;
     }
