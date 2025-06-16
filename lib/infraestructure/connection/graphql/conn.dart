@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:agile_front/infraestructure/connection/service.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:agile_front/infraestructure/operation.dart' as op;
-
+import 'dart:async';
 class GraphqlConn extends Service{
   final GraphQLClient _client;
   GraphqlConn({required GraphQLClient client}) : _client = client;
