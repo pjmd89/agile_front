@@ -10,7 +10,6 @@ class GraphqlConn extends Service{
   @override
   Future<dynamic> operation({required op.Operation operation, void Function(Object)? callback, Map<String, dynamic>? variables}) async{
     final queryVariables = variables ?? {};
-    log("hola mundo");
     final response = await _client.query(
       QueryOptions(
         document: gql(operation.build()), 
@@ -18,15 +17,19 @@ class GraphqlConn extends Service{
       ),
     );
     if (response.hasException) {
+      log("es un error");
       final errors = response.exception?.graphqlErrors ?? [];
       if (errors.isNotEmpty) {
+        log("llego al not empty");
         // Handle exceptions here, e.g., log them or show a message
         return response.exception?.graphqlErrors;
       }
       return;
     }
     var data = operation.result(response.data ?? {});
+    log("ejecuto");
     if (callback != null){
+      log("llego al callback");
       callback(data);
     }
     return data;
