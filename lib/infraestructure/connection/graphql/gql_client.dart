@@ -2,9 +2,10 @@ import 'package:agile_front/infraestructure/utils/env_enum.dart';
 import 'package:agile_front/infraestructure/utils/isWeb.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:http/io_client.dart';
-import 'package:http/browser_client.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'http_client_stub.dart'
+    if (dart.library.html) 'http_client_web.dart';
 
 String valueCookie = '';
 class ClientWithCookies extends IOClient {
@@ -69,11 +70,8 @@ class GqlClient{
     );
 
     if(isWeb){
-      print("es Web");
-      http.Client httpApiClient = http.Client();
-      if (httpApiClient is BrowserClient) {
-        httpApiClient.withCredentials = true;
-      }
+      http.Client httpApiClient = createHttpClient();
+      
       _httpApiLink = HttpLink(apiURL, httpClient:httpApiClient);
       apiLink = _httpApiLink;
 
@@ -82,7 +80,6 @@ class GqlClient{
       }
     }
     else{
-      print("no es Web");
       _httpApiLink = HttpLink(apiURL, httpClient: ClientWithCookies.createFromEnvironment(env: env));
       apiLink = _authLink.concat(_httpApiLink);
 
