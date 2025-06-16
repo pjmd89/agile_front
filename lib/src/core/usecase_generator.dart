@@ -37,16 +37,26 @@ class UseCaseGenerator {
         final file = File('${outDir.path}/$fileName');
         if (!file.existsSync()) {
           file.writeAsStringSync('''
-import '/src/domain/operation/fields_builders/main.dart';
-import '/src/domain/operation/main.dart';
+import 'package:agile_front/infraestructure/operation.dart';
+import 'package:agile_front/infraestructure/connection/service.dart' as conn_service;
+import 'package:gps_agile_front/src/domain/entities/main.dart';
 import 'package:agile_front/infraestructure/usecase.dart';
 
 class $className implements UseCase {
-  $className();
+  final Operation _operation;
+  final conn_service.Service _conn;
+  $className({
+    required Operation operation,
+    required conn_service.Service conn,
+  }) : _operation = operation,
+      _conn = conn;
+
   @override
-  String build() {
-    // TODO: Implementar lógica de $crud para $name
-    return '';
+  build() {
+    _conn.operation(operation: _operation, callback: callback);
+  }
+  callback(Object ob) {
+    
   }
 }
 ''');

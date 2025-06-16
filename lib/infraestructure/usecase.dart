@@ -1,3 +1,3 @@
 abstract class UseCase{
-  String build();
+  dynamic build();
 }
