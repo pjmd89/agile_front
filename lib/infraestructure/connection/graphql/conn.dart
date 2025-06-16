@@ -6,7 +6,7 @@ class GraphqlConn extends Service{
   final GraphQLClient _client;
   GraphqlConn({required GraphQLClient client}) : _client = client;
   @override
-  operation({required op.Operation operation, required void Function(Object) callback, Map<String, dynamic>? variables}) async{
+  Future<dynamic> operation({required op.Operation operation, required dynamic Function(Object) callback, Map<String, dynamic>? variables}) async{
     final queryVariables = variables ?? {};
     final response = await _client.query(
       QueryOptions(
@@ -22,6 +22,6 @@ class GraphqlConn extends Service{
       }
       return;
     }
-    callback(operation.result(response.data ?? {}));
+    return await callback(operation.result(response.data ?? {}));
   }
 }
