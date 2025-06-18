@@ -1,17 +1,20 @@
 import 'dart:developer';
 
 import 'package:agile_front/infraestructure/connection/service.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+
 import 'package:agile_front/infraestructure/operation.dart' as op;
 import 'dart:async';
+
+import 'package:dart_gql/main.dart';
+import 'package:graphql/client.dart';
 class GraphqlConn extends Service{
-  final GraphQLClient _client;
-  GraphqlConn({required GraphQLClient client}) : _client = client;
+  final DartGql _gql;
+  GraphqlConn({required DartGql client}) : _gql = client;
   @override
   Future<dynamic> operation({required op.Operation operation, void Function(Object)? callback, Map<String, dynamic>? variables}) async{
     final queryVariables = variables ?? {};
     log(operation.build());
-    final response = await _client.query(
+    final response = await _gql.client.query(
       QueryOptions(
         operationName: operation.name,
         document: gql(operation.build()), 
