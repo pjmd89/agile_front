@@ -3,7 +3,7 @@ import 'package:agile_front/infraestructure/connection/service.dart';
 import 'package:agile_front/infraestructure/operation.dart' as op;
 import 'dart:async';
 import 'package:dart_gql/main.dart';
-import 'package:graphql/client.dart';
+export 'package:graphql/client.dart';
 export 'package:dart_gql/main.dart';
 class GraphqlConn extends Service{
   final DartGql _gql;
