@@ -72,13 +72,24 @@ class GqlErrorArbGenerator {
     final buffer = StringBuffer();
     buffer.writeln('{');
     bool first = true;
-    // Si data es una lista, toma el primer elemento
-    final item = (data is List && data.isNotEmpty) ? data[0] : data;
-    for (final key in allowed) {
-      if (item != null && item[key] != null) {
-        if (!first) buffer.writeln(',');
-        buffer.write('  "${queryName}Error_$key": "${item[key]}"');
-        first = false;
+    if (data is List) {
+      for (int i = 0; i < data.length; i++) {
+        final item = data[i];
+        for (final key in allowed) {
+          if (item != null && item[key] != null) {
+            if (!first) buffer.writeln(',');
+            buffer.write('  "${queryName}Error_${key}_$i": "${item[key]}"');
+            first = false;
+          }
+        }
+      }
+    } else if (data is Map) {
+      for (final key in allowed) {
+        if (data[key] != null) {
+          if (!first) buffer.writeln(',');
+          buffer.write('  "${queryName}Error_$key": "${data[key]}"');
+          first = false;
+        }
       }
     }
     buffer.writeln('\n}');
