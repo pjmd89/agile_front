@@ -1,9 +1,9 @@
-import 'package:agile_front/infraestructure/operation.dart' as af;
+import 'package:agile_front/infraestructure/operation.dart';
 import 'dart:async';
 
 abstract class Service{
   Future<dynamic> operation({
-    required af.Operation operation,
+    required Operation operation,
     void Function(Object)? callback,
     Map<String, dynamic>? variables,
   });
