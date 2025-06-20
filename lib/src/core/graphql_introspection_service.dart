@@ -33,6 +33,7 @@ class GraphQLIntrospectionService {
           kind
           fields {
             name
+            description
             type {
               kind
               name
