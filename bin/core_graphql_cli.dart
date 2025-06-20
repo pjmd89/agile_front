@@ -1,7 +1,7 @@
 // CLI principal para el generador de proyectos GraphQL
 // Aquí se implementarán los comandos para generar la estructura, modelos, routers, etc.
 
-import 'package:agile_front/src/core/gql_error_arb_generator.dart';
+import 'package:agile_front/src/core/gql_error_arb_generator_http.dart';
 import 'package:agile_front/src/core/usecase_generator.dart';
 import 'package:args/args.dart';
 import 'dart:io';
@@ -154,7 +154,7 @@ Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
     builderGenerator.generateBuildersFromTypes(schema['types'] as List);
     operationGenerator.generateOperationsFromSchema({'types': schema['types']});
     useCaseGenerator.generateUseCasesFromSchema(schema);
-    gqlErrorArbGenerator.generateArbFromSchema(schema);
+    gqlErrorArbGenerator.generateArbFromSchema(endpointUrl,schema);
 
   } catch (e) {
     print('Error durante la introspección/generación: $e');
