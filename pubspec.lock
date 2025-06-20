@@ -182,7 +182,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "94780b7d6b706e995e4b2aaee11f8d030a48c22c"
+      resolved-ref: bba4abdc0f71a0a1b499697d30b46df6c781f2ea
       url: "https://github.com/pjmd89/dart_gql"
     source: git
     version: "1.0.0"

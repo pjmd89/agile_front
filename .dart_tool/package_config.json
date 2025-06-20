@@ -135,7 +135,7 @@
     },
     {
       "name": "dart_gql",
-      "rootUri": "file:///home/munozp/.pub-cache/git/dart_gql-94780b7d6b706e995e4b2aaee11f8d030a48c22c/",
+      "rootUri": "file:///home/munozp/.pub-cache/git/dart_gql-bba4abdc0f71a0a1b499697d30b46df6c781f2ea/",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -680,7 +680,7 @@
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-06-20T16:07:39.883226Z",
+  "generated": "2025-06-20T20:52:08.875133Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///home/munozp/snap/flutter/common/flutter",
