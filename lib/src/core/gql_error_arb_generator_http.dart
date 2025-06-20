@@ -46,6 +46,7 @@ class GqlErrorArbGenerator {
     final client = HttpClient();
     final request = await client.postUrl(Uri.parse(endpoint));
     request.headers.contentType = ContentType.json;
+    print(query);
     request.write(jsonEncode({'query': query}));
     final response = await request.close();
     final responseBody = await utf8.decoder.bind(response).join();
