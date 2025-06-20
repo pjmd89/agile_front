@@ -92,6 +92,12 @@
       "languageVersion": "2.19"
     },
     {
+      "name": "cli_config",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/cli_config-0.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "clock",
       "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/clock-1.1.2",
       "packageUri": "lib/",
@@ -116,6 +122,12 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "coverage",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/coverage-1.14.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "crypto",
       "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/crypto-3.0.6",
       "packageUri": "lib/",
@@ -123,7 +135,7 @@
     },
     {
       "name": "dart_gql",
-      "rootUri": "file:///home/munozp/.pub-cache/git/dart_gql-4b50e6f420c0d216618b8627a4fc94a9e4c09841/",
+      "rootUri": "file:///home/munozp/.pub-cache/git/dart_gql-2ca8dee9869cfa53661f49c53b45943e7764884a/",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -344,6 +356,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "node_preamble",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/node_preamble-2.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "normalize",
       "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/normalize-0.9.1",
       "packageUri": "lib/",
@@ -470,6 +488,18 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "shelf_packages_handler",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/shelf_packages_handler-3.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "shelf_static",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/shelf_static-1.1.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "shelf_web_socket",
       "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/shelf_web_socket-3.0.0",
       "packageUri": "lib/",
@@ -492,6 +522,18 @@
       "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/source_helper-1.3.5",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "source_map_stack_trace",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/source_map_stack_trace-2.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "source_maps",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/source_maps-0.10.13",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
     },
     {
       "name": "source_span",
@@ -536,8 +578,20 @@
       "languageVersion": "3.1"
     },
     {
+      "name": "test",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/test-1.26.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.5"
+    },
+    {
       "name": "test_api",
       "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/test_api-0.7.6",
+      "packageUri": "lib/",
+      "languageVersion": "3.5"
+    },
+    {
+      "name": "test_core",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/test_core-0.6.11",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
@@ -572,6 +626,12 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "vm_service",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/vm_service-15.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.5"
+    },
+    {
       "name": "watcher",
       "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/watcher-1.1.2",
       "packageUri": "lib/",
@@ -596,6 +656,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "webkit_inspection_protocol",
+      "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/webkit_inspection_protocol-1.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "xdg_directories",
       "rootUri": "file:///home/munozp/.pub-cache/hosted/pub.dev/xdg_directories-1.1.0",
       "packageUri": "lib/",
@@ -614,7 +680,7 @@
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-06-19T04:11:51.362170Z",
+  "generated": "2025-06-20T13:50:16.365797Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///home/munozp/snap/flutter/common/flutter",
