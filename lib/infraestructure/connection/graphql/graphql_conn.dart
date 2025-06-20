@@ -10,7 +10,7 @@ class GraphqlConn extends Service{
   @override
   Future<dynamic> operation({required Operation operation, void Function(Object)? callback, Map<String, dynamic>? variables}) async{
     final queryVariables = variables ?? {};
-    final response = await _gql.client.query(
+    final response = await _gql.query(
       QueryOptions(
         operationName: operation.name,
         document: gql(operation.build()), 
