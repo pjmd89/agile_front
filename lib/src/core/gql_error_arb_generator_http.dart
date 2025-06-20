@@ -7,26 +7,36 @@ class GqlErrorArbGenerator {
 
   Future<void> generateArbFromSchema(String endpoint, Map<String, dynamic> schema) async {
     print('Generando archivos arb para errores GraphQL...');
+    // Buscar el root type Query
     final types = schema['types'] as List?;
     if (types == null) {
       print('No se encontraron tipos en el schema.');
       return;
     }
-    // Filtrar types que tengan en la descripción la cadena '-gqlError'
-    final errorTypes = types.where((t) =>
-      t is Map &&
-      t['description'] is String &&
-      (t['description'] as String).contains('-gqlError')
+    final queryType = types.firstWhere(
+      (t) => t is Map && t['name'] == 'Query',
+      orElse: () => null,
     );
-    if (errorTypes.isEmpty) {
-      print('No se encontraron types con "-gqlError" en la descripción.');
+    if (queryType == null) {
+      print('No se encontró el root type Query.');
       return;
     }
-    for (final type in errorTypes) {
-      final name = type['name'] as String;
-      // Construir la query para obtener los valores del type
-      final query = '''query { $name { message code level } }''';
-      final response = await _doGraphQLQuery(endpoint, query);
+    final fields = queryType['fields'] as List? ?? [];
+    // Filtrar queries con '-gqlError' en la descripción
+    final errorQueries = fields.where((f) =>
+      f is Map &&
+      f['description'] is String &&
+      (f['description'] as String).contains('-gqlError')
+    );
+    if (errorQueries.isEmpty) {
+      print('No se encontraron queries con "-gqlError" en la descripción.');
+      return;
+    }
+    for (final query in errorQueries) {
+      final name = query['name'] as String;
+      // Construir la query para obtener los valores
+      final gql = '''query { $name { message code level } }''';
+      final response = await _doGraphQLQuery(endpoint, gql);
       final data = response['data']?[name];
       if (data == null) {
         print('No se obtuvieron datos para $name');
@@ -46,7 +56,6 @@ class GqlErrorArbGenerator {
     final client = HttpClient();
     final request = await client.postUrl(Uri.parse(endpoint));
     request.headers.contentType = ContentType.json;
-    print(query);
     request.write(jsonEncode({'query': query}));
     final response = await request.close();
     final responseBody = await utf8.decoder.bind(response).join();
@@ -57,7 +66,7 @@ class GqlErrorArbGenerator {
     }
   }
 
-  String _buildArbContent(String typeName, dynamic data) {
+  String _buildArbContent(String queryName, dynamic data) {
     // data es un Map con las claves message, code, level
     final allowed = {'message', 'code', 'level'};
     final buffer = StringBuffer();
@@ -66,7 +75,7 @@ class GqlErrorArbGenerator {
     for (final key in allowed) {
       if (data[key] != null) {
         if (!first) buffer.writeln(',');
-        buffer.write('  "${typeName}Error_$key": "${data[key]}"');
+        buffer.write('  "${queryName}Error_$key": "${data[key]}"');
         first = false;
       }
     }
