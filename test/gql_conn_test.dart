@@ -32,7 +32,6 @@ void main() async{
         print("objeto: ${ob.toString()}");
       },
     );
-    print(data);
     expect(data, isNotNull);
   });
 }
