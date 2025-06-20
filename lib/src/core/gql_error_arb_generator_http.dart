@@ -68,28 +68,21 @@ class GqlErrorArbGenerator {
 
   String _buildArbContent(String queryName, dynamic data) {
     // data puede ser un Map o una List
-    final allowed = {'message', 'code', 'level'};
     final buffer = StringBuffer();
     buffer.writeln('{');
     bool first = true;
     if (data is List) {
       for (int i = 0; i < data.length; i++) {
         final item = data[i];
-        for (final key in allowed) {
-          if (item != null && item[key] != null) {
-            if (!first) buffer.writeln(',');
-            buffer.write('  "${queryName}Error_${key}_$i": "${item[key]}"');
-            first = false;
-          }
+        if (item != null && item['code'] != null && item['message'] != null) {
+          if (!first) buffer.writeln(',');
+          buffer.write('  "err_${item['code']}": "${item['message']}"');
+          first = false;
         }
       }
     } else if (data is Map) {
-      for (final key in allowed) {
-        if (data[key] != null) {
-          if (!first) buffer.writeln(',');
-          buffer.write('  "${queryName}Error_$key": "${data[key]}"');
-          first = false;
-        }
+      if (data['code'] != null && data['message'] != null) {
+        buffer.write('  "err_${data['code']}": "${data['message']}"');
       }
     }
     buffer.writeln('\n}');
