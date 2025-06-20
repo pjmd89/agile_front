@@ -1,4 +1,4 @@
-import 'package:agile_front/infraestructure/connection/graphql/conn.dart';
+import 'package:agile_front/infraestructure/connection/graphql/graphql_conn.dart';
 import 'package:test/test.dart';
 import 'package:agile_front/infraestructure/operation.dart' as op;
 
