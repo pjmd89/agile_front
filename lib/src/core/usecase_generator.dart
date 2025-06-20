@@ -37,17 +37,16 @@ class UseCaseGenerator {
         final file = File('${outDir.path}/$fileName');
         if (!file.existsSync()) {
           file.writeAsStringSync('''
-import 'package:agile_front/infraestructure/operation.dart';
-import 'package:agile_front/infraestructure/connection/service.dart' as conn_service;
+import 'package:agile_front/agile_front.dart' as af;
 import 'package:gps_agile_front/src/domain/entities/main.dart';
-import 'package:agile_front/infraestructure/usecase.dart';
 
-class $className implements UseCase {
-  final Operation _operation;
-  final conn_service.Service _conn;
+
+class $className implements af.UseCase {
+  final af.Operation _operation;
+  final af.Service _conn;
   $className({
-    required Operation operation,
-    required conn_service.Service conn,
+    required af.Operation operation,
+    required af.Service conn,
   }) : _operation = operation,
       _conn = conn;
 
