@@ -19,7 +19,6 @@ import '../lib/src/core/templates/themes/purple.dart';
 import '../lib/src/core/templates/themes/teal.dart';
 import '../lib/src/core/templates/notifier/theme_brightness_notifier.dart';
 import '../lib/src/core/templates/templates/main_template.dart';
-import '../lib/src/core/templates/navigation/main_navigation.dart';
 import '../lib/src/core/templates/main_flutter.dart';
 import '../lib/src/core/templates/enviromnents/main.dart';
 import '../lib/src/core/templates/enviromnents/dev.json.dart';
@@ -135,7 +134,6 @@ void _createBaseStructure(String libRoot) {
     '${libRoot}/src/presentation/core/themes/purple.dart': themePurple,
     '${libRoot}/src/presentation/core/themes/teal.dart': themeTeal,
     '${libRoot}/src/presentation/core/templates/main.dart': mainTemplate,
-    '${libRoot}/src/presentation/core/navigation/routes/main.dart': mainNavigation,
     '${libRoot}/src/presentation/widgets/loading/main.dart': loadingWidget,
     '${libRoot}/main.dart': mainFlutter,
     
