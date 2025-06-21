@@ -17,6 +17,9 @@ import '../lib/src/core/templates/l10n.yaml.dart';
 import '../lib/src/core/templates/purple.dart';
 import '../lib/src/core/templates/teal.dart';
 import '../lib/src/core/templates/theme_brightness.dart';
+import '../lib/src/core/templates/main_template.dart';
+import '../lib/src/core/templates/main_navigation.dart';
+import '../lib/src/core/templates/main_flutter.dart';
 
 void main(List<String> arguments) async {
   final parser =
@@ -110,6 +113,9 @@ void _createBaseStructure(String libRoot) {
     '${libRoot}/src/presentation/providers/theme_brightness_notifier.dart': themeBrightnessNotifier,
     '${libRoot}/src/presentation/core/themes/purple.dart': themePurple,
     '${libRoot}/src/presentation/core/themes/teal.dart': themeTeal,
+    '${libRoot}/src/presentation/core/templates/main.dart': mainTemplate,
+    '${libRoot}/src/presentation/core/navigation/main.dart': mainNavigation,
+    '${libRoot}/main.dart': mainFlutter,
     
   };
 
