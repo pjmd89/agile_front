@@ -5,7 +5,7 @@ import 'package:agile_front/src/core/gql_error_arb_generator_http.dart';
 import 'package:agile_front/src/core/usecase_generator.dart';
 import 'package:args/args.dart';
 import 'dart:io';
-//import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as p;
 import '../lib/src/core/graphql_introspection_service.dart';
 import '../lib/src/core/model_generator.dart';
 import '../lib/src/core/operation_generator.dart';
@@ -109,22 +109,23 @@ void _createBaseStructure(String libRoot) {
     l10nYaml.writeAsStringSync('arb-dir: lib/l10n\ntemplate-arb-file: app_es.arb\noutput-localization-file: app_localizations.dart\n');
     print('  + Archivo creado: ${l10nYaml.path}');
   }
-  // Copiar template de locale_notifier.dart.template a providers/locale_notifier.dart
-  final scriptDir = File(Platform.script.toFilePath()).parent.path;
-  final templatePath = '$scriptDir/../lib/src/core/templates/locale_notifier.dart.template';
-  final targetDir = Directory('$libRoot/src/presentation/providers');
-  if (!targetDir.existsSync()) {
-    targetDir.createSync(recursive: true);
-  }
-  final targetPath = '${targetDir.path}/locale_notifier.dart';
-  final templateFile = File(templatePath);
-  if (templateFile.existsSync()) {
-    final content = templateFile.readAsStringSync();
-    File(targetPath).writeAsStringSync(content);
-    print('  + Archivo copiado: $targetPath');
-  } else {
-    print('  - No se encontró el template: $templatePath');
-  }
+    // Copiar template de locale_notifier.dart.template a providers/locale_notifier.dart
+    final scriptDir = File(Platform.script.toFilePath()).parent;
+    final packageRoot = scriptDir.parent;
+    final templatePath = p.join(packageRoot.path, 'lib', 'src', 'core', 'templates', 'locale_notifier.dart.template');
+    final targetDir = Directory(p.join(packageRoot.path, 'lib', 'src', 'presentation', 'providers'));
+    if (!targetDir.existsSync()) {
+      targetDir.createSync(recursive: true);
+    }
+    final targetPath = p.join(targetDir.path, 'locale_notifier.dart');
+    final templateFile = File(templatePath);
+    if (templateFile.existsSync()) {
+      final content = templateFile.readAsStringSync();
+      File(targetPath).writeAsStringSync(content);
+      print('  + Archivo copiado: $targetPath');
+    } else {
+      print('  - No se encontró el template: $templatePath');
+    }
   /*
   final files = {
     '$libRoot/core_graphql.dart':
