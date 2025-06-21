@@ -107,6 +107,7 @@ class PageGenerator {
         final classCrud = crud == 'read' ? '' : _capitalize(crud);
         final className = '${_capitalize(name)}${classCrud}Page';
         final viewModelImport = "import './view_model.dart';";
+        //final viewModelImport = "import '/src/presentation/pages/$name/$crud/view_model.dart';";
         final file = File('${crudDir.path}/main.dart');
         // Parámetros para update y delete
         String constructorParams = (crud == 'update' || crud == 'delete') ? '{super.key, required this.id}' : '{super.key}';
