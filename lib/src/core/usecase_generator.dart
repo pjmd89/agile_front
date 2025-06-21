@@ -106,11 +106,14 @@ class PageGenerator {
             : '${crud}_${name.toLowerCase()}_page.dart';
         final file = File('${outDir.path}/$fileName');
         if (!file.existsSync()) {
+          // Si es update o delete, agregar parámetro id
+          String constructorParams = (crud == 'update' || crud == 'delete') ? '{super.key, required this.id}' : '{super.key}';
+          String fieldId = (crud == 'update' || crud == 'delete') ? '  final String id;\n' : '';
           file.writeAsStringSync('''import 'package:flutter/material.dart';
 
 class $className extends StatefulWidget {
-  const $className({super.key});
-
+  const $className($constructorParams);
+$fieldId
   @override
   State<$className> createState() => _${className}State();
 }
