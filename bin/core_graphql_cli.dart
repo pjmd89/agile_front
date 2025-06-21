@@ -109,23 +109,33 @@ void _createBaseStructure(String libRoot) {
     l10nYaml.writeAsStringSync('arb-dir: lib/l10n\ntemplate-arb-file: app_es.arb\noutput-localization-file: app_localizations.dart\n');
     print('  + Archivo creado: ${l10nYaml.path}');
   }
-    // Copiar template de locale_notifier.dart.template a providers/locale_notifier.dart
-    final scriptDir = File(Platform.script.toFilePath()).parent;
-    final packageRoot = scriptDir.parent;
-    final templatePath = p.join(packageRoot.path, 'lib', 'src', 'core', 'templates', 'locale_notifier.dart.template');
-    final targetDir = Directory(p.join(packageRoot.path, 'lib', 'src', 'presentation', 'providers'));
+  // Copiar template de locale_notifier.dart.template a providers/locale_notifier.dart
+  String? findTemplatePath() {
+    final scriptPath = File(Platform.script.toFilePath()).absolute.path;
+    var dir = File(scriptPath).parent;
+    while (dir.path != dir.parent.path) {
+      final candidate = p.join(dir.path, 'lib', 'src', 'core', 'templates', 'locale_notifier.dart.template');
+      if (File(candidate).existsSync()) {
+        return candidate;
+      }
+      dir = dir.parent;
+    }
+    return null;
+  }
+
+  final templatePath = findTemplatePath();
+  if (templatePath != null) {
+    final targetDir = Directory('lib/src/presentation/providers');
     if (!targetDir.existsSync()) {
       targetDir.createSync(recursive: true);
     }
     final targetPath = p.join(targetDir.path, 'locale_notifier.dart');
-    final templateFile = File(templatePath);
-    if (templateFile.existsSync()) {
-      final content = templateFile.readAsStringSync();
-      File(targetPath).writeAsStringSync(content);
-      print('  + Archivo copiado: $targetPath');
-    } else {
-      print('  - No se encontró el template: $templatePath');
-    }
+    final content = File(templatePath).readAsStringSync();
+    File(targetPath).writeAsStringSync(content);
+    print('  + Archivo copiado: $targetPath');
+  } else {
+    print('  - No se encontró el template locale_notifier.dart.template en el árbol de directorios.');
+  }
   /*
   final files = {
     '$libRoot/core_graphql.dart':
