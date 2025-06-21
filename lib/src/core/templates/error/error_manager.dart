@@ -6,7 +6,7 @@ class ErrorManager implements ErrorConnManager{
   final Map<String,ErrorHandler> handlers;
   ErrorManager({required this.handlers});
   @override
-  void handleGraphqlError(List<GraphQLError> errors) {
+  ErrorReturned handleGraphqlError(List<GraphQLError> errors) {
     for (var err in errors) {
       if(handlers.containsKey(err.extensions?['code'])){
         handlers[err.extensions?['code']]!(errors);
@@ -14,7 +14,16 @@ class ErrorManager implements ErrorConnManager{
         debugPrint('Unhandled GraphQL error: ${err.message}');
       }
     }
+    return ErrorReturned(
+      gqlError: errors,
+      httpError: null,
+    );
   }
   @override
-  void handleHttpError(QueryResult result) {}
+  ErrorReturned handleHttpError(QueryResult result) {
+    return ErrorReturned(
+      gqlError: null,
+      httpError: result,
+    );
+  }
 }''';
