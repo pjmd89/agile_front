@@ -134,7 +134,7 @@ void _createBaseStructure(String libRoot) {
     File(targetPath).writeAsStringSync(content);
     print('  + Archivo copiado: $targetPath');
   } else {
-    print('  - No se encontró el template locale_notifier.dart.template en el árbol de directorios.');
+    print('  - No se encontró el template $templatePath en el árbol de directorios.');
   }
   /*
   final files = {
