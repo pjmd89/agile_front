@@ -91,6 +91,8 @@ void _createBaseStructure(String libRoot) {
     '$libRoot/src/presentation/core/themes',
     '$libRoot/src/presentation/core/templates',
     '$libRoot/src/presentation/core/navigation',
+    '$libRoot/src/presentation/core/navigation/routes',
+    '$libRoot/src/presentation/core/navigation/appbar',
     '$libRoot/src/presentation/pages',
     '$libRoot/src/presentation/widgets',
     '$libRoot/src/presentation/providers',
@@ -133,7 +135,7 @@ void _createBaseStructure(String libRoot) {
     '${libRoot}/src/presentation/core/themes/purple.dart': themePurple,
     '${libRoot}/src/presentation/core/themes/teal.dart': themeTeal,
     '${libRoot}/src/presentation/core/templates/main.dart': mainTemplate,
-    '${libRoot}/src/presentation/core/navigation/main.dart': mainNavigation,
+    '${libRoot}/src/presentation/core/navigation/routes/main.dart': mainNavigation,
     '${libRoot}/src/presentation/widgets/loading/main.dart': loadingWidget,
     '${libRoot}/main.dart': mainFlutter,
     
