@@ -29,6 +29,7 @@ import '../lib/src/core/templates/enviromnents/stag.json.dart';
 import '../lib/src/core/templates/vscode/launch.json.dart';
 import '../lib/src/core/templates/widgets/loading.dart';
 import '../lib/src/core/templates/templates/basic_template.dart';
+import '../lib/src/core/templates/error/error_manager.dart';
 
 
 void main(List<String> arguments) async {
@@ -147,6 +148,7 @@ void _createBaseStructure(String libRoot, bool isBack) {
     '${libRoot}/src/presentation/core/templates/main.dart': mainTemplate,
     '${libRoot}/src/presentation/core/templates/basic/main.dart': basicTemplate,
     '${libRoot}/src/presentation/widgets/loading/main.dart': loadingWidget,
+    '${libRoot}/src/infraestructure/error/error_manager.dart': errorTemplate,
     '${libRoot}/main.dart': mainFlutter,
     'pubspec.yaml.example': pubSpec,
     
