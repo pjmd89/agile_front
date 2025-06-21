@@ -266,7 +266,7 @@ class MainRoutesGenerator {
     }
     buffer.writeln();
     // Lista de shellRoutes
-    final shellRoutes = usecaseTypes.map((type) => '${(type['name'] as String).toLowerCase()}ShellRoute').join(',');
+    final shellRoutes = usecaseTypes.map((type) => '${(type['name'] as String).toLowerCase()}ShellRoute').join(',\n   ');
     buffer.writeln('GoRouter templateRouter = GoRouter(');
     buffer.writeln('  initialLocation: "/",');
     buffer.writeln('  routes: [$shellRoutes],');
