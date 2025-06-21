@@ -231,4 +231,49 @@ ShellRoute ${name.toLowerCase()}ShellRoute = ShellRoute(
   }
 }
 
+class MainRoutesGenerator {
+  final String libRoot;
+  MainRoutesGenerator({this.libRoot = 'lib'});
+
+  void generateMainRoutesFromSchema(Map<String, dynamic> schema) {
+    print('Generando archivo main.dart de rutas...');
+    final types = schema['types'] as List?;
+    if (types == null) {
+      print('No se encontraron tipos en el schema.');
+      return;
+    }
+    final usecaseTypes = types.where((t) =>
+      t is Map &&
+      t['description'] is String &&
+      (t['description'] as String).contains('-usecase')
+    ).toList();
+    if (usecaseTypes.isEmpty) {
+      print('No se encontraron types con "-usecase" en la descripción.');
+      return;
+    }
+    final outDir = Directory('$libRoot/src/presentation/core/navigation/routes');
+    if (!outDir.existsSync()) {
+      outDir.createSync(recursive: true);
+      print('  + Carpeta creada: \\${outDir.path}');
+    }
+    final mainFile = File('${outDir.path}/main.dart');
+    final buffer = StringBuffer();
+    buffer.writeln("import 'package:go_router/go_router.dart';");
+    // Imports de cada archivo de rutas
+    for (final type in usecaseTypes) {
+      final name = type['name'] as String;
+      buffer.writeln("import '${name.toLowerCase()}_routes.dart';");
+    }
+    buffer.writeln();
+    // Lista de shellRoutes
+    final shellRoutes = usecaseTypes.map((type) => '${(type['name'] as String).toLowerCase()}ShellRoute').join(',');
+    buffer.writeln('GoRouter templateRouter = GoRouter(');
+    buffer.writeln('  initialLocation: "/",');
+    buffer.writeln('  routes: [$shellRoutes],');
+    buffer.writeln(');');
+    mainFile.writeAsStringSync(buffer.toString());
+    print('  + Archivo generado: ${mainFile.path}');
+  }
+}
+
 String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
