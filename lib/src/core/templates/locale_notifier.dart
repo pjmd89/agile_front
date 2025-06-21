@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+
+String appLocaleNotifier = r'''import 'package:flutter/material.dart';
 import '/l10n/app_localizations.dart';
 
 class AppLocaleNotifier extends ChangeNotifier {
@@ -114,4 +115,4 @@ extension AppLocaleExtension on AppLocale {
         return AppLocalizations.of(context)!.languageSpanish;
     }
   }
-}
+}''';

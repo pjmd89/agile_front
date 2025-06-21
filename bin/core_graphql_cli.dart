@@ -5,11 +5,11 @@ import 'package:agile_front/src/core/gql_error_arb_generator_http.dart';
 import 'package:agile_front/src/core/usecase_generator.dart';
 import 'package:args/args.dart';
 import 'dart:io';
-import 'package:path/path.dart' as p;
 import '../lib/src/core/graphql_introspection_service.dart';
 import '../lib/src/core/model_generator.dart';
 import '../lib/src/core/operation_generator.dart';
 import '../lib/src/core/builder_generator.dart';
+import '../lib/src/core/templates/locale_notifier.dart';
 
 void main(List<String> arguments) async {
   final parser =
@@ -110,32 +110,13 @@ void _createBaseStructure(String libRoot) {
     print('  + Archivo creado: ${l10nYaml.path}');
   }
   // Copiar template de locale_notifier.dart.template a providers/locale_notifier.dart
-  String? findTemplatePath() {
-    final scriptPath = File(Platform.script.toFilePath()).absolute.path;
-    var dir = File(scriptPath).parent;
-    while (dir.path != dir.parent.path) {
-      final candidate = p.join(dir.path, 'lib', 'src', 'core', 'templates', 'locale_notifier.dart.template');
-      if (File(candidate).existsSync()) {
-        return candidate;
-      }
-      dir = dir.parent;
-    }
-    return null;
+  
+  final localeNotifier = File('${libRoot}/src/presentation/providers/locale_notifier.dart');
+  if (!localeNotifier.existsSync()) {
+    localeNotifier.writeAsStringSync(appLocaleNotifier);
+    print('  + Archivo creado: ${localeNotifier.path}');
   }
-
-  final templatePath = findTemplatePath();
-  if (templatePath != null) {
-    final targetDir = Directory('lib/src/presentation/providers');
-    if (!targetDir.existsSync()) {
-      targetDir.createSync(recursive: true);
-    }
-    final targetPath = p.join(targetDir.path, 'locale_notifier.dart');
-    final content = File(templatePath).readAsStringSync();
-    File(targetPath).writeAsStringSync(content);
-    print('  + Archivo copiado: $targetPath');
-  } else {
-    print('  - No se encontró el template $templatePath en el árbol de directorios.');
-  }
+  
   /*
   final files = {
     '$libRoot/core_graphql.dart':
