@@ -19,6 +19,7 @@ class Template extends StatelessWidget {
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
       theme: TealTheme().materialTheme,
       locale: Locale(localeCode),
