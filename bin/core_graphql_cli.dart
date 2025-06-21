@@ -106,7 +106,7 @@ void _createBaseStructure(String libRoot) {
   files.forEach((path, content) {
     final file = File(path);
     if (!file.existsSync()) {
-      file.writeAsStringSync(appLocaleNotifier);
+      file.writeAsStringSync(content);
       print('  + Archivo creado: ${file.path}');
     }
   });
