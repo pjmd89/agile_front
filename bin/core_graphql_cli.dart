@@ -90,6 +90,7 @@ void _createBaseStructure(String libRoot, bool isBack) {
     '$libRoot/src/infraestructure/services',
     '$libRoot/src/infraestructure/persistence',
     '$libRoot/src/infraestructure/utils',
+    '$libRoot/src/infraestructure/error',
     '$libRoot/src/infraestructure/config',
     '$libRoot/src/presentation/core/themes',
     '$libRoot/src/presentation/core/templates',
