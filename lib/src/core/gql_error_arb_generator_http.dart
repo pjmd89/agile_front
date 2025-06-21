@@ -70,7 +70,7 @@ class GqlErrorArbGenerator {
     // data puede ser un Map o una List
     final buffer = StringBuffer();
     buffer.writeln('{');
-    buffer.write('  "@@locale": "es",\n');
+    buffer.write('  "@@locale": "en",\n');
     bool first = true;
     if (data is List) {
       for (int i = 0; i < data.length; i++) {
