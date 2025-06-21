@@ -19,6 +19,7 @@ dependencies:
       url: https://github.com/pjmd89/dart_gql
       ref: main
   graphql: ^5.2.1
+  flutter_gen: ^5.10.0
 
 dev_dependencies:
   build_runner: ^2.4.8
