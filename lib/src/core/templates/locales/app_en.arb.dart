@@ -1,4 +1,5 @@
 String appEnArb = r'''{
+    "@@locale": "en",
     "languageEnglish":"English",
     "@languageEnglish": {
       "description": ""
