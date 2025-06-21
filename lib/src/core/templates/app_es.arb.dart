@@ -1,4 +1,7 @@
 String appEsArb = r'''{
     "languageEnglish":"Inglés",
-    "languageSpanish":"Español"
+    "languageSpanish":"Español",
+    "brightnessTheme":"Tema",
+    "brightnessLight":"Claro",
+    "brightnessDark":"Oscuro"
 }''';

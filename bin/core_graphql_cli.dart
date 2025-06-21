@@ -14,6 +14,9 @@ import '../lib/src/core/templates/gql_notifier.dart';
 import '../lib/src/core/templates/app_en.arb.dart';
 import '../lib/src/core/templates/app_es.arb.dart';
 import '../lib/src/core/templates/l10n.yaml.dart';
+import '../lib/src/core/templates/purple.dart';
+import '../lib/src/core/templates/teal.dart';
+import '../lib/src/core/templates/theme_brightness.dart';
 
 void main(List<String> arguments) async {
   final parser =
@@ -104,6 +107,10 @@ void _createBaseStructure(String libRoot) {
     'l10n.yaml': appL10n,
     '${libRoot}/src/presentation/providers/gql_notifier.dart': appGqlNotifier,
     '${libRoot}/src/presentation/providers/locale_notifier.dart': appLocaleNotifier,
+    '${libRoot}/src/presentation/providers/theme_brightness_notifier.dart': themeBrightnessNotifier,
+    '${libRoot}/src/presentation/core/themes/purple.dart': themePurple,
+    '${libRoot}/src/presentation/core/themes/teal.dart': themeTeal,
+    
   };
 
   files.forEach((path, content) {

@@ -20,6 +20,7 @@ dependencies:
       ref: main
   graphql: ^5.2.1
   flutter_gen: ^5.10.0
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   build_runner: ^2.4.8
