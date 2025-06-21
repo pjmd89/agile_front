@@ -21,6 +21,12 @@ import '../lib/src/core/templates/notifier/theme_brightness_notifier.dart';
 import '../lib/src/core/templates/templates/main_template.dart';
 import '../lib/src/core/templates/navigation/main_navigation.dart';
 import '../lib/src/core/templates/main_flutter.dart';
+import '../lib/src/core/templates/enviromnents/main.dart';
+import '../lib/src/core/templates/enviromnents/dev.json.dart';
+import '../lib/src/core/templates/enviromnents/test.json.dart';
+import '../lib/src/core/templates/enviromnents/prod.json.dart';
+import '../lib/src/core/templates/enviromnents/stag.json.dart';
+import '../lib/src/core/templates/vscode/launch.json.dart';
 
 
 void main(List<String> arguments) async {
@@ -80,6 +86,7 @@ void _createBaseStructure(String libRoot) {
     '$libRoot/src/infraestructure/services',
     '$libRoot/src/infraestructure/persistence',
     '$libRoot/src/infraestructure/utils',
+    '$libRoot/src/infraestructure/config',
     '$libRoot/src/presentation/core/themes',
     '$libRoot/src/presentation/core/templates',
     '$libRoot/src/presentation/core/navigation',
@@ -88,7 +95,8 @@ void _createBaseStructure(String libRoot) {
     '$libRoot/src/presentation/providers',
     '$libRoot/src/i18n',
     'test',
-    '.env'
+    '.env',
+    '.vscode'
   ];
 
   for (final dir in directories) {
@@ -111,6 +119,12 @@ void _createBaseStructure(String libRoot) {
     '${libRoot}/l10n/app_es.arb': appEsArb,
     '${libRoot}/l10n/app_en.arb': appEnArb,
     'l10n.yaml': appL10n,
+    '.env/dev.json': devEnvironment,
+    '.env/prod.json': prodEnvironment,
+    '.env/stag.json': stagEnvironment,
+    '.env/test.json': testEnvironment,
+    '.vscode/launch.json': vscodeLaunchJson,
+    '${libRoot}/src/infraestructure/config/env.dart': environment,
     '${libRoot}/src/presentation/providers/gql_notifier.dart': appGqlNotifier,
     '${libRoot}/src/presentation/providers/locale_notifier.dart': appLocaleNotifier,
     '${libRoot}/src/presentation/providers/loading_notifier.dart': loadingNotifier,
