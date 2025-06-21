@@ -68,4 +68,65 @@ class $className implements af.UseCase {
   // Puedes agregar métodos auxiliares para generar archivos, carpetas, etc.
 }
 
+class PageGenerator {
+  final String libRoot;
+  PageGenerator({this.libRoot = 'lib'});
+
+  void generatePagesFromSchema(Map<String, dynamic> schema) {
+    print('Generando páginas de presentación...');
+    final types = schema['types'] as List?;
+    if (types == null) {
+      print('No se encontraron tipos en el schema.');
+      return;
+    }
+    // Filtrar types que tengan en la descripción la cadena '-usecase'
+    final usecaseTypes = types.where((t) =>
+      t is Map &&
+      t['description'] is String &&
+      (t['description'] as String).contains('-usecase')
+    );
+    if (usecaseTypes.isEmpty) {
+      print('No se encontraron types con "-usecase" en la descripción.');
+      return;
+    }
+    for (final type in usecaseTypes) {
+      final name = type['name'] as String;
+      final outDir = Directory('$libRoot/src/presentation/pages/$name');
+      if (!outDir.existsSync()) {
+        outDir.createSync(recursive: true);
+        print('  + Carpeta creada: \\${outDir.path}');
+      }
+      // CRUD: create, read, update, delete
+      final crudParts = ['create', 'read', 'update', 'delete'];
+      for (final crud in crudParts) {
+        String classCrud = crud == 'read' ? '' : _capitalize(crud);
+        String className = '${_capitalize(name)}${classCrud}Page';
+        String fileName = crud == 'read'
+            ? '${name.toLowerCase()}_page.dart'
+            : '${crud}_${name.toLowerCase()}_page.dart';
+        final file = File('${outDir.path}/$fileName');
+        if (!file.existsSync()) {
+          file.writeAsStringSync('''import 'package:flutter/material.dart';
+
+class $className extends StatefulWidget {
+  const $className({super.key});
+
+  @override
+  State<$className> createState() => _${className}State();
+}
+
+class _${className}State extends State<$className> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+''');
+          print('    + Archivo generado: \\${file.path}');
+        }
+      }
+    }
+  }
+}
+
 String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
