@@ -110,15 +110,24 @@ class PageGenerator {
           String constructorParams = (crud == 'update' || crud == 'delete') ? '{super.key, required this.id}' : '{super.key}';
           String fieldId = (crud == 'update' || crud == 'delete') ? '  final String id;\n' : '';
           file.writeAsStringSync('''import 'package:flutter/material.dart';
+import 'package:agile_front/agile_front.dart';
+import '/src/presentation/providers/gql_notifier.dart';
 
 class $className extends StatefulWidget {
   const $className($constructorParams);
 $fieldId
+  
   @override
   State<$className> createState() => _${className}State();
 }
 
 class _${className}State extends State<$className> {
+  late GqlConn gqlConn;
+  @override
+  void initState() {
+    super.initState();
+    gqlConn = context.read<GQLNotifier>().gqlConn;
+  }
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
