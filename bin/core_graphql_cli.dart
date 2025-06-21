@@ -85,6 +85,23 @@ void _createBaseStructure(String libRoot) {
       print('  + Carpeta creada: $dir');
     }
   }
+
+  final l10nDir = Directory('$libRoot/l10n');
+  if (!l10nDir.existsSync()) {
+    l10nDir.createSync(recursive: true);
+  }
+  final arbFile = File('${libRoot}/l10n/app_es.arb');
+  
+  if (!arbFile.existsSync()) {
+    arbFile.writeAsStringSync('{}');
+    print('  + Archivo creado: ${arbFile.path}');
+  }
+  // Crear archivo l10n.yaml en la raíz del proyecto
+  final l10nYaml = File('${libRoot}/l10n.yaml');
+  if (!l10nYaml.existsSync()) {
+    l10nYaml.writeAsStringSync('arb-dir: lib/l10n\ntemplate-arb-file: app_es.arb\noutput-localization-file: app_localizations.dart\n');
+    print('  + Archivo creado: ${l10nYaml.path}');
+  }
   /*
   final files = {
     '$libRoot/core_graphql.dart':
@@ -156,24 +173,6 @@ Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
     operationGenerator.generateOperationsFromSchema({'types': schema['types']});
     useCaseGenerator.generateUseCasesFromSchema(schema);
     gqlErrorArbGenerator.generateArbFromSchema(endpointUrl,schema);
-
-    // Crear archivo en blanco app_es.arb en l10n
-    final l10nDir = Directory('$libRoot/l10n');
-    if (!l10nDir.existsSync()) {
-      l10nDir.createSync(recursive: true);
-    }
-    final arbFile = File('${libRoot}/l10n/app_es.arb');
-    arbFile.writeAsStringSync('{}');
-    print('  + Archivo creado: ${arbFile.path}');
-    if (!arbFile.existsSync()) {
-      
-    }
-    // Crear archivo l10n.yaml en la raíz del proyecto
-    final l10nYaml = File('${libRoot}/l10n.yaml');
-    if (!l10nYaml.existsSync()) {
-      l10nYaml.writeAsStringSync('arb-dir: lib/l10n\ntemplate-arb-file: app_es.arb\noutput-localization-file: app_localizations.dart\n');
-      print('  + Archivo creado: ${l10nYaml.path}');
-    }
     
   } catch (e) {
     print('Error durante la introspección/generación: $e');
