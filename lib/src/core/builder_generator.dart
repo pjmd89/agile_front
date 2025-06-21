@@ -57,15 +57,21 @@ class BuilderGenerator {
         final outPath = '$outDir/${className.toLowerCase()}_fields_builder.dart';
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
-        outFile.writeAsStringSync(buffer.toString());
-        print('  + Builder generado: $outPath');
+        if(!outFile.existsSync()) {
+          outFile.writeAsStringSync(buffer.toString());
+          print('  + Builder generado: $outPath');
+        }
+        
         barrelBuffer.writeln("export './${className.toLowerCase()}_fields_builder.dart';");
       }
     }
     // Actualizar barrel file
     final barrelFile = File('$outDir/fields_builders.dart');
-    barrelFile.writeAsStringSync(barrelBuffer.toString());
-    print('  + Barrel actualizado: $outDir/fields_builders.dart');
+    if(!barrelFile.existsSync()){
+      barrelFile.writeAsStringSync(barrelBuffer.toString());
+      print('  + Barrel actualizado: $outDir/fields_builders.dart');
+    }
+    
 
     // --- Generar main.dart (barrel file) para builders ---
     final mainBuffer = StringBuffer();
@@ -89,8 +95,10 @@ class BuilderGenerator {
         }
       }
       final mainFile = File('${outDirAbs.path}/main.dart');
-      mainFile.writeAsStringSync(mainBuffer.toString());
-      print('  + Barrel main.dart generado: ${mainFile.path}');
+      if (!mainFile.existsSync()) {
+        mainFile.writeAsStringSync(mainBuffer.toString());
+        print('  + Barrel main.dart generado: ${mainFile.path}');
+      }
     }
   }
 
