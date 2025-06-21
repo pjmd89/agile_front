@@ -97,7 +97,7 @@ void _createBaseStructure(String libRoot) {
     print('  + Archivo creado: ${arbFile.path}');
   }
   // Crear archivo l10n.yaml en la raíz del proyecto
-  final l10nYaml = File('${libRoot}/l10n.yaml');
+  final l10nYaml = File('l10n.yaml');
   if (!l10nYaml.existsSync()) {
     l10nYaml.writeAsStringSync('arb-dir: lib/l10n\ntemplate-arb-file: app_es.arb\noutput-localization-file: app_localizations.dart\n');
     print('  + Archivo creado: ${l10nYaml.path}');
