@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return af.MultiProvider(
       providers: [
         af.ChangeNotifierProvider(create: (_) => AppLocaleNotifier()),
-        af.ChangeNotifierProvider(create: (_) => GQLNotifier()),
+        af.ChangeNotifierProvider(create: (_) => GQLNotifier(context: context)),
         af.ChangeNotifierProvider(create: (_) => ThemeBrightnessNotifier()),
         af.ChangeNotifierProvider(create: (_) => LoadingNotifier()),
       ],
