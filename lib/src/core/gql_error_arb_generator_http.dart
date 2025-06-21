@@ -70,20 +70,21 @@ class GqlErrorArbGenerator {
     // data puede ser un Map o una List
     final buffer = StringBuffer();
     buffer.writeln('{');
+    buffer.write('  "@@locale": "es",\n');
     bool first = true;
     if (data is List) {
       for (int i = 0; i < data.length; i++) {
         final item = data[i];
         if (item != null && item['code'] != null && item['message'] != null) {
           if (!first) buffer.writeln(',');
-          buffer.write('  "err_${item['code']}": "${item['message']}"\n');
+          buffer.write('  "err_${item['code']}": "${item['message']}",\n');
           buffer.write('  "@err_${item['code']}": {\n    "description": ""\n  }');
           first = false;
         }
       }
     } else if (data is Map) {
       if (data['code'] != null && data['message'] != null) {
-        buffer.write('  "err_${data['code']}": "${data['message']}"');
+        buffer.write('  "err_${data['code']}": "${data['message']}",\n');
         buffer.write('  "@err_${data['code']}": {\n    "description": ""\n  }');
       }
     }
