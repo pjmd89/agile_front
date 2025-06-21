@@ -108,13 +108,16 @@ class PageGenerator {
         final className = '${_capitalize(name)}${classCrud}Page';
         final viewModelImport = "import '/src/presentation/pages/$name/$crud/view_model.dart';";
         final file = File('${crudDir.path}/main.dart');
+        // Parámetros para update y delete
+        String constructorParams = (crud == 'update' || crud == 'delete') ? '{super.key, required this.id}' : '{super.key}';
+        String fieldId = (crud == 'update' || crud == 'delete') ? '  final String id;\n' : '';
         if (!file.existsSync()) {
           file.writeAsStringSync('''import 'package:flutter/material.dart';
 $viewModelImport
 
 class $className extends StatefulWidget {
-  const $className({super.key});
-
+  const $className($constructorParams);
+$fieldId
   @override
   State<$className> createState() => _${className}State();
 }
