@@ -280,8 +280,10 @@ class MainRoutesGenerator {
     buffer.writeln('  initialLocation: "/",');
     buffer.writeln('  routes: [$shellRoutes],');
     buffer.writeln(');');
-    mainFile.writeAsStringSync(buffer.toString());
-    print('  + Archivo generado: ${mainFile.path}');
+    if(!mainFile.existsSync()){
+      mainFile.writeAsStringSync(buffer.toString());
+      print('  + Archivo generado: ${mainFile.path}');
+    }
   }
 }
 
