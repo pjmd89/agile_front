@@ -10,6 +10,7 @@ import '../lib/src/core/model_generator.dart';
 import '../lib/src/core/operation_generator.dart';
 import '../lib/src/core/builder_generator.dart';
 import '../lib/src/core/templates/locale_notifier.dart';
+import '../lib/src/core/templates/gql_notifier.dart';
 
 void main(List<String> arguments) async {
   final parser =
@@ -90,88 +91,29 @@ void _createBaseStructure(String libRoot) {
   if (!l10nDir.existsSync()) {
     l10nDir.createSync(recursive: true);
   }
-  final arbFile = File('${libRoot}/l10n/app_es.arb');
-  
-  if (!arbFile.existsSync()) {
-    arbFile.writeAsStringSync('{"languageEnglish":"Inglés","languageSpanish":"Español"}');
-    print('  + Archivo creado: ${arbFile.path}');
-  }
 
-  final arbFileEn = File('${libRoot}/l10n/app_en.arb');
-  
-  if (!arbFileEn.existsSync()) {
-    arbFileEn.writeAsStringSync('{"languageEnglish":"English",\n"languageSpanish":"Spanish"}');
-    print('  + Archivo creado: ${arbFileEn.path}');
-  }
-  // Crear archivo l10n.yaml en la raíz del proyecto
-  final l10nYaml = File('l10n.yaml');
-  if (!l10nYaml.existsSync()) {
-    l10nYaml.writeAsStringSync('arb-dir: lib/l10n\ntemplate-arb-file: app_es.arb\noutput-localization-file: app_localizations.dart\n');
-    print('  + Archivo creado: ${l10nYaml.path}');
-  }
   // Copiar template de locale_notifier.dart.template a providers/locale_notifier.dart
   
-  final localeNotifier = File('${libRoot}/src/presentation/providers/locale_notifier.dart');
-  if (!localeNotifier.existsSync()) {
-    localeNotifier.writeAsStringSync(appLocaleNotifier);
-    print('  + Archivo creado: ${localeNotifier.path}');
-  }
   
-  /*
-  final files = {
-    '$libRoot/core_graphql.dart':
-        """// Archivo principal de exportación del core\nlibrary core_graphql;\n""",
-    '$libRoot/src/core/app_router.dart':
-        '// TODO: Implementar app_router.dart\n',
-    '$libRoot/src/core/datasource_base.dart':
-        '// TODO: Implementar datasource_base.dart\n',
-    '$libRoot/src/core/repository_base.dart':
-        '// TODO: Implementar repository_base.dart\n',
-    '$libRoot/src/core/theme_manager.dart':
-        '// TODO: Implementar theme_manager.dart\n',
-    '$libRoot/src/core/template_manager.dart':
-        '// TODO: Implementar template_manager.dart\n',
-    '$libRoot/src/core/error_manager.dart':
-        '// TODO: Implementar error_manager.dart\n',
-    '$libRoot/src/core/logger.dart': '// TODO: Implementar logger.dart\n',
-    '$libRoot/src/core/config.dart': '// TODO: Implementar config.dart\n',
-    '$libRoot/src/core/providers/auth_provider.dart':
-        '// TODO: Implementar auth_provider.dart\n',
+  var files = {
+    '${libRoot}/l10n/app_es.arb': '{"languageEnglish":"Inglés","languageSpanish":"Español"}',
+    '${libRoot}/l10n/app_en.arb': '{"languageEnglish":"English","languageSpanish":"Spanish"}',
+    'l10n.yaml': 'arb-dir: lib/l10n\ntemplate-arb-file: app_es.arb\noutput-localization-file: app_localizations.dart\n',
+    '${libRoot}/src/presentation/providers/gql_notifier.dart': appGqlNotifier,
+    '${libRoot}/src/presentation/providers/locale_notifier.dart': appLocaleNotifier,
   };
 
   files.forEach((path, content) {
     final file = File(path);
-    // Asegura que el directorio padre exista antes de crear el archivo
-    Directory(file.parent.path).createSync(recursive: true);
     if (!file.existsSync()) {
-      file.writeAsStringSync(content);
-      print('  + Archivo creado: $path');
+      file.writeAsStringSync(appLocaleNotifier);
+      print('  + Archivo creado: ${file.path}');
     }
   });
-  */
+  
 
   print('Estructura base creada correctamente.');
 }
-/*
-void _copyBaseTemplates(String libRoot) {
-  final templateDir = Directory('templates/base');
-  final destDir = Directory('$libRoot/src/core');
-
-  if (!templateDir.existsSync()) {
-    print('No se encontró la carpeta de templates/base.');
-    return;
-  }
-
-  for (final file in templateDir.listSync()) {
-    if (file is File && file.path.endsWith('.dart')) {
-      final fileName = p.basename(file.path);
-      final destPath = p.join(destDir.path, fileName);
-      file.copySync(destPath);
-      print('  + Archivo base copiado: $destPath');
-    }
-  }
-}
-*/
 
 Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
   print('Realizando introspección de esquema en: $endpointUrl');
