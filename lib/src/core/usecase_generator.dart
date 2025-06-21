@@ -126,6 +126,10 @@ class _${className}State extends State<$className> {
   @override
   void initState() {
     super.initState();
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     gqlConn = context.read<GQLNotifier>().gqlConn;
   }
   @override
