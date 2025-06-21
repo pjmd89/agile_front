@@ -77,13 +77,14 @@ class GqlErrorArbGenerator {
         if (item != null && item['code'] != null && item['message'] != null) {
           if (!first) buffer.writeln(',');
           buffer.write('  "err_${item['code']}": "${item['message']}"\n');
-          buffer.write('  "@err_${item['code']}": {\n    "description": ""\n  },');
+          buffer.write('  "@err_${item['code']}": {\n    "description": ""\n  }');
           first = false;
         }
       }
     } else if (data is Map) {
       if (data['code'] != null && data['message'] != null) {
         buffer.write('  "err_${data['code']}": "${data['message']}"');
+        buffer.write('  "@err_${data['code']}": {\n    "description": ""\n  }');
       }
     }
     buffer.writeln('\n}');

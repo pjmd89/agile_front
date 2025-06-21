@@ -1,22 +1,22 @@
 String appEnArb = r'''{
     "languageEnglish":"English",
     "@languageEnglish": {
-      "description": "",
+      "description": ""
     },
     "languageSpanish":"Spanish",
     "@languageSpanish": {
-      "description": "",
+      "description": ""
     },
     "brightnessTheme":"Theme",
     "@brightnessTheme": {
-      "description": "",
+      "description": ""
     },
     "brightnessLight":"Light",
     "@brightnessLight": {
-      "description": "",
+      "description": ""
     },
     "brightnessDark":"Dark",
     "@brightnessDark": {
-      "description": "",
+      "description": ""
     }
 }''';
