@@ -93,14 +93,14 @@ void _createBaseStructure(String libRoot) {
   final arbFile = File('${libRoot}/l10n/app_es.arb');
   
   if (!arbFile.existsSync()) {
-    arbFile.writeAsStringSync('{"languageEnglish":"Inglés","languageSpanish":"Español",}');
+    arbFile.writeAsStringSync('{"languageEnglish":"Inglés","languageSpanish":"Español"}');
     print('  + Archivo creado: ${arbFile.path}');
   }
 
   final arbFileEn = File('${libRoot}/l10n/app_en.arb');
   
   if (!arbFileEn.existsSync()) {
-    arbFileEn.writeAsStringSync('{"languageEnglish":"English",\n"languageSpanish":"Spanish",}');
+    arbFileEn.writeAsStringSync('{"languageEnglish":"English",\n"languageSpanish":"Spanish"}');
     print('  + Archivo creado: ${arbFileEn.path}');
   }
   // Crear archivo l10n.yaml en la raíz del proyecto
