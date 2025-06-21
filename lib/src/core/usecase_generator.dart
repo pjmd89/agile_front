@@ -91,38 +91,36 @@ class PageGenerator {
     }
     for (final type in usecaseTypes) {
       final name = type['name'] as String;
-      final outDir = Directory('$libRoot/src/presentation/pages/$name');
-      if (!outDir.existsSync()) {
-        outDir.createSync(recursive: true);
-        print('  + Carpeta creada: \\${outDir.path}');
+      final typeDir = Directory('$libRoot/src/presentation/pages/$name');
+      if (!typeDir.existsSync()) {
+        typeDir.createSync(recursive: true);
+        print('  + Carpeta creada: \\${typeDir.path}');
       }
       // CRUD: create, read, update, delete
       final crudParts = ['create', 'read', 'update', 'delete'];
       for (final crud in crudParts) {
-        String classCrud = crud == 'read' ? '' : _capitalize(crud);
-        String className = '${_capitalize(name)}${classCrud}Page';
-        String fileName = crud == 'read'
-            ? 'main.dart'
-            : '${crud}_${name.toLowerCase()}_page.dart';
-        final file = File('${outDir.path}/$fileName');
+        final crudDir = Directory('${typeDir.path}/$crud');
+        if (!crudDir.existsSync()) {
+          crudDir.createSync(recursive: true);
+          print('    + Carpeta creada: \\${crudDir.path}');
+        }
+        final classCrud = crud == 'read' ? '' : _capitalize(crud);
+        final className = '${_capitalize(name)}${classCrud}Page';
+        final viewModelImport = "import '/src/presentation/pages/$name/view_model.dart';";
+        final file = File('${crudDir.path}/main.dart');
         if (!file.existsSync()) {
-          // Si es update o delete, agregar parámetro id
-          String constructorParams = (crud == 'update' || crud == 'delete') ? '{super.key, required this.id}' : '{super.key}';
-          String fieldId = (crud == 'update' || crud == 'delete') ? '  final String id;\n' : '';
           file.writeAsStringSync('''import 'package:flutter/material.dart';
-import 'package:agile_front/agile_front.dart';
-import '/src/presentation/providers/gql_notifier.dart';
+$viewModelImport
 
 class $className extends StatefulWidget {
-  const $className($constructorParams);
-$fieldId
-  
+  const $className({super.key});
+
   @override
   State<$className> createState() => _${className}State();
 }
 
 class _${className}State extends State<$className> {
-  late GqlConn gqlConn;
+  late ViewModel viewModel;
   @override
   void initState() {
     super.initState();
@@ -130,15 +128,50 @@ class _${className}State extends State<$className> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    gqlConn = context.read<GQLNotifier>().gqlConn;
+    viewModel = ViewModel(context: context);
   }
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return ListenableBuilder(listenable: viewModel, builder:  (context, child) {
+      return Placeholder();
+    });
   }
 }
 ''');
-          print('    + Archivo generado: \\${file.path}');
+          print('      + Archivo generado: \\${file.path}');
+        }
+        // Crear view_model.dart
+        final viewModelFile = File('${crudDir.path}/view_model.dart');
+        if (!viewModelFile.existsSync()) {
+          viewModelFile.writeAsStringSync('''import 'package:agile_front/agile_front.dart';
+import 'package:flutter/material.dart';
+import '/src/presentation/providers/gql_notifier.dart';
+
+class ViewModel extends ChangeNotifier {
+  bool _loading = true;
+  bool _error = false;
+  final GqlConn _gqlConn;
+  final BuildContext _context;
+  bool get loading => _loading;
+  bool get error => _error;
+
+  set loading(bool newLoading) {
+    _loading = newLoading;
+    notifyListeners();
+  }
+  set error(bool value) {
+    _error = value;
+    notifyListeners();
+  }
+  ViewModel(
+    {required BuildContext context}
+  ) : _context = context,
+      _gqlConn = context.read<GQLNotifier>().gqlConn;
+
+  
+}
+''');
+          print('      + Archivo generado: \\${viewModelFile.path}');
         }
       }
     }
@@ -178,10 +211,10 @@ class RouteGenerator {
         file.writeAsStringSync('''import 'package:agile_front/agile_front.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '/src/presentation/pages/$capName/main.dart';
-import '/src/presentation/pages/$capName/create_${name.toLowerCase()}_page.dart';
-import '/src/presentation/pages/$capName/delete_${name.toLowerCase()}_page.dart';
-import '/src/presentation/pages/$capName/update_${name.toLowerCase()}_page.dart';
+import '/src/presentation/pages/$name/read/main.dart';
+import '/src/presentation/pages/$name/create/main.dart';
+import '/src/presentation/pages/$name/delete/main.dart';
+import '/src/presentation/pages/$name/update/main.dart';
 import '/src/presentation/core/templates/basic/main.dart';
 import '/src/presentation/providers/locale_notifier.dart';
 
