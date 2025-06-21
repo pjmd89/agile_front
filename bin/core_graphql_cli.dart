@@ -94,6 +94,7 @@ void _createBaseStructure(String libRoot) {
     '$libRoot/src/presentation/core/navigation/appbar',
     '$libRoot/src/presentation/pages',
     '$libRoot/src/presentation/widgets',
+    '$libRoot/src/presentation/widgets/loading',
     '$libRoot/src/presentation/providers',
     '$libRoot/src/i18n',
     'test',
