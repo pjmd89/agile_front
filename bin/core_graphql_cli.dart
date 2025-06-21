@@ -9,17 +9,17 @@ import '../lib/src/core/graphql_introspection_service.dart';
 import '../lib/src/core/model_generator.dart';
 import '../lib/src/core/operation_generator.dart';
 import '../lib/src/core/builder_generator.dart';
-import '../lib/src/core/templates/locale_notifier.dart';
-import '../lib/src/core/templates/gql_notifier.dart';
-import '../lib/src/core/templates/loading_notifier.dart';
-import '../lib/src/core/templates/app_en.arb.dart';
-import '../lib/src/core/templates/app_es.arb.dart';
-import '../lib/src/core/templates/l10n.yaml.dart';
-import '../lib/src/core/templates/purple.dart';
-import '../lib/src/core/templates/teal.dart';
-import '../lib/src/core/templates/theme_brightness.dart';
-import '../lib/src/core/templates/main_template.dart';
-import '../lib/src/core/templates/main_navigation.dart';
+import '../lib/src/core/templates/notifier/locale_notifier.dart';
+import '../lib/src/core/templates/notifier/gql_notifier.dart';
+import '../lib/src/core/templates/notifier/loading_notifier.dart';
+import '../lib/src/core/templates/locales/app_en.arb.dart';
+import '../lib/src/core/templates/locales/app_es.arb.dart';
+import '../lib/src/core/templates/locales/l10n.yaml.dart';
+import '../lib/src/core/templates/themes/purple.dart';
+import '../lib/src/core/templates/themes/teal.dart';
+import '../lib/src/core/templates/notifier/theme_brightness_notifier.dart';
+import '../lib/src/core/templates/templates/main_template.dart';
+import '../lib/src/core/templates/navigation/main_navigation.dart';
 import '../lib/src/core/templates/main_flutter.dart';
 
 
@@ -88,6 +88,7 @@ void _createBaseStructure(String libRoot) {
     '$libRoot/src/presentation/providers',
     '$libRoot/src/i18n',
     'test',
+    '.env'
   ];
 
   for (final dir in directories) {
