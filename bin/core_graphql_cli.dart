@@ -157,6 +157,23 @@ Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
     useCaseGenerator.generateUseCasesFromSchema(schema);
     gqlErrorArbGenerator.generateArbFromSchema(endpointUrl,schema);
 
+    // Crear archivo en blanco app_es.arb en l10n
+    final l10nDir = Directory('$libRoot/l10n');
+    if (!l10nDir.existsSync()) {
+      l10nDir.createSync(recursive: true);
+    }
+    final arbFile = File('${l10nDir.path}/app_es.arb');
+    if (!arbFile.existsSync()) {
+      arbFile.writeAsStringSync('{}');
+      print('  + Archivo creado: ${arbFile.path}');
+    }
+    // Crear archivo l10n.yaml en la raíz del proyecto
+    final l10nYaml = File('${libRoot.replaceAll('/lib', '')}/l10n.yaml');
+    if (!l10nYaml.existsSync()) {
+      l10nYaml.writeAsStringSync('arb-dir: lib/l10n\ntemplate-arb-file: app_es.arb\noutput-localization-file: app_localizations.dart\n');
+      print('  + Archivo creado: ${l10nYaml.path}');
+    }
+    
   } catch (e) {
     print('Error durante la introspección/generación: $e');
   }
