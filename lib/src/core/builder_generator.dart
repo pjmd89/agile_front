@@ -56,8 +56,8 @@ class BuilderGenerator {
         buffer.writeln('}');
         final outPath = '$outDir/${className.toLowerCase()}_fields_builder.dart';
         final outFile = File(outPath);
-        outFile.createSync(recursive: true);
         if(!outFile.existsSync()) {
+          outFile.createSync(recursive: true);
           outFile.writeAsStringSync(buffer.toString());
           print('  + Builder generado: $outPath');
         }
