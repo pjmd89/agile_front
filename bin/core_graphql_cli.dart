@@ -20,6 +20,7 @@ import '../lib/src/core/templates/themes/teal.dart';
 import '../lib/src/core/templates/notifier/theme_brightness_notifier.dart';
 import '../lib/src/core/templates/templates/main_template.dart';
 import '../lib/src/core/templates/main_flutter.dart';
+import '../lib/src/core/templates/pubspec.yaml.dart';
 import '../lib/src/core/templates/enviromnents/main.dart';
 import '../lib/src/core/templates/enviromnents/dev.json.dart';
 import '../lib/src/core/templates/enviromnents/test.json.dart';
@@ -141,6 +142,7 @@ void _createBaseStructure(String libRoot) {
     '${libRoot}/src/presentation/core/templates/basic/main.dart': basicTemplate,
     '${libRoot}/src/presentation/widgets/loading/main.dart': loadingWidget,
     '${libRoot}/main.dart': mainFlutter,
+    '${libRoot}/pubspec.yaml.example': pubSpec,
     
   };
 
