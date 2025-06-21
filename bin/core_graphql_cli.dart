@@ -62,7 +62,7 @@ void main(List<String> arguments) async {
 
 void _createBaseStructure(String libRoot) {
   final directories = [
-    '$libRoot/src/l10n',
+    '$libRoot/l10n',
     '$libRoot/src/domain/entities',
     '$libRoot/src/domain/usecases',
     '$libRoot/src/infraestructure/services',
