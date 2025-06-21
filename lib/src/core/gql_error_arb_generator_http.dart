@@ -76,7 +76,8 @@ class GqlErrorArbGenerator {
         final item = data[i];
         if (item != null && item['code'] != null && item['message'] != null) {
           if (!first) buffer.writeln(',');
-          buffer.write('  "err_${item['code']}": "${item['message']}"');
+          buffer.write('  "err_${item['code']}": "${item['message']}"\n');
+          buffer.write('  "@err_${item['code']}": {\n    "description": ""\n  },');
           first = false;
         }
       }
