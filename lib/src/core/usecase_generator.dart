@@ -38,7 +38,7 @@ class UseCaseGenerator {
         if (!file.existsSync()) {
           file.writeAsStringSync('''
 import 'package:agile_front/agile_front.dart' as af;
-import 'package:gps_agile_front/src/domain/entities/main.dart';
+import '/src/domain/entities/main.dart';
 
 
 class $className implements af.UseCase {
