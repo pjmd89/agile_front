@@ -40,10 +40,12 @@ void main(List<String> arguments) async {
           help: 'Carpeta raíz de lib para la estructura generada',
         )
         ..addCommand('init')
-        ..addCommand('generate');
+        ..addCommand('generate')
+        ..addFlag('back', abbr: 'b', defaultsTo: false, help: 'Activa el modo back');
 
   final argResults = parser.parse(arguments);
   final libRoot = argResults['lib-root'] ?? 'lib';
+  final isBack = argResults['back'] as bool;
 
   if (argResults.command == null) {
     print('Bienvenido al generador de proyectos GraphQL!');
@@ -58,7 +60,7 @@ void main(List<String> arguments) async {
   switch (argResults.command!.name) {
     case 'init':
       print('Inicializando estructura base del proyecto...');
-      _createBaseStructure(libRoot);
+      _createBaseStructure(libRoot, isBack);
       //_copyBaseTemplates(libRoot);
       break;
     case 'generate':
@@ -71,7 +73,7 @@ void main(List<String> arguments) async {
         return;
       }
       final endpointUrl = argResults.command!.arguments.first;
-      await _generateFromGraphQL(endpointUrl, libRoot);
+      await _generateFromGraphQL(endpointUrl, libRoot, isBack);
       break;
     default:
       print(
@@ -80,7 +82,7 @@ void main(List<String> arguments) async {
   }
 }
 
-void _createBaseStructure(String libRoot) {
+void _createBaseStructure(String libRoot, bool isBack) {
   final directories = [
     '$libRoot/l10n',
     '$libRoot/src/domain/entities',
@@ -107,6 +109,9 @@ void _createBaseStructure(String libRoot) {
   ];
 
   for (final dir in directories) {
+    if(isBack && dir.contains('src/presentation/')) {
+      continue; // No crear rutas si es modo back
+    }
     final directory = Directory(dir);
     if (!directory.existsSync()) {
       directory.createSync(recursive: true);
@@ -145,8 +150,17 @@ void _createBaseStructure(String libRoot) {
     'pubspec.yaml.example': pubSpec,
     
   };
-
+  
   files.forEach((path, content) {
+    if(isBack && path.contains('src/presentation/')) {
+      return; // No crear archivos si es modo back
+    }
+    if(isBack && path.contains('${libRoot}/main.dart')) {
+      return; // No crear archivos si es modo back
+    }
+    if(isBack && path.contains('pubspec.yaml.example')) {
+      return; // No crear archivos si es modo back
+    }
     final file = File(path);
     if (!file.existsSync()) {
       file.writeAsStringSync(content);
@@ -158,7 +172,7 @@ void _createBaseStructure(String libRoot) {
   print('Estructura base creada correctamente.');
 }
 
-Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
+Future<void> _generateFromGraphQL(String endpointUrl, String libRoot, bool isBack) async {
   print('Realizando introspección de esquema en: $endpointUrl');
   final introspector = GraphQLIntrospectionService();
   final modelGenerator = ModelGenerator(libRoot: libRoot);
@@ -175,10 +189,14 @@ Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
     builderGenerator.generateBuildersFromTypes(schema['types'] as List);
     operationGenerator.generateOperationsFromSchema({'types': schema['types']});
     useCaseGenerator.generateUseCasesFromSchema(schema);
-    pageGenerator.generatePagesFromSchema(schema);
-    routeGenerator.generateRoutesFromSchema(schema);
-    mainRouteGenerator.generateMainRoutesFromSchema(schema);
-    gqlErrorArbGenerator.generateArbFromSchema(endpointUrl,schema);
+    if(!isBack) {
+      // Solo generar páginas y rutas si no es modo back
+      pageGenerator.generatePagesFromSchema(schema);
+      routeGenerator.generateRoutesFromSchema(schema);
+      mainRouteGenerator.generateMainRoutesFromSchema(schema);
+      gqlErrorArbGenerator.generateArbFromSchema(endpointUrl,schema);
+    }
+    
     
   } catch (e) {
     print('Error durante la introspección/generación: $e');
