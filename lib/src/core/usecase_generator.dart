@@ -102,7 +102,7 @@ class PageGenerator {
         String classCrud = crud == 'read' ? '' : _capitalize(crud);
         String className = '${_capitalize(name)}${classCrud}Page';
         String fileName = crud == 'read'
-            ? '${name.toLowerCase()}_page.dart'
+            ? 'main.dart'
             : '${crud}_${name.toLowerCase()}_page.dart';
         final file = File('${outDir.path}/$fileName');
         if (!file.existsSync()) {
