@@ -1,4 +1,4 @@
-String basicTamplate = r'''import 'package:flutter/material.dart';
+String basicTemplate = r'''import 'package:flutter/material.dart';
 import '/src/presentation/widgets/loading/main.dart';
 
 class BasicTemplate extends StatelessWidget {

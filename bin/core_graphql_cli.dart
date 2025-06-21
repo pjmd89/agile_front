@@ -27,6 +27,7 @@ import '../lib/src/core/templates/enviromnents/prod.json.dart';
 import '../lib/src/core/templates/enviromnents/stag.json.dart';
 import '../lib/src/core/templates/vscode/launch.json.dart';
 import '../lib/src/core/templates/widgets/loading.dart';
+import '../lib/src/core/templates/templates/basic_template.dart';
 
 
 void main(List<String> arguments) async {
@@ -89,6 +90,7 @@ void _createBaseStructure(String libRoot) {
     '$libRoot/src/infraestructure/config',
     '$libRoot/src/presentation/core/themes',
     '$libRoot/src/presentation/core/templates',
+    '$libRoot/src/presentation/core/templates/basic/',
     '$libRoot/src/presentation/core/navigation',
     '$libRoot/src/presentation/core/navigation/routes',
     '$libRoot/src/presentation/core/navigation/appbar',
@@ -96,6 +98,7 @@ void _createBaseStructure(String libRoot) {
     '$libRoot/src/presentation/widgets',
     '$libRoot/src/presentation/widgets/loading',
     '$libRoot/src/presentation/providers',
+    
     '$libRoot/src/i18n',
     'test',
     '.env',
@@ -135,6 +138,7 @@ void _createBaseStructure(String libRoot) {
     '${libRoot}/src/presentation/core/themes/purple.dart': themePurple,
     '${libRoot}/src/presentation/core/themes/teal.dart': themeTeal,
     '${libRoot}/src/presentation/core/templates/main.dart': mainTemplate,
+    '${libRoot}/src/presentation/core/templates/basic/main.dart': basicTemplate,
     '${libRoot}/src/presentation/widgets/loading/main.dart': loadingWidget,
     '${libRoot}/main.dart': mainFlutter,
     
