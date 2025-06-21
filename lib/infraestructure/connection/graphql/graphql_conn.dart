@@ -22,7 +22,6 @@ class GraphqlConn extends Service{
     if (response.hasException) {
       final errors = response.exception?.graphqlErrors ?? [];
       if (errors.isNotEmpty) {
-        // Handle exceptions here, e.g., log them or show a message
         return _errorManager.handleGraphqlError(errors);
       }
       return _errorManager.handleHttpError(response);
