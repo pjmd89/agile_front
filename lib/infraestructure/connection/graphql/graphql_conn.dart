@@ -1,4 +1,5 @@
 
+import 'package:agile_front/infraestructure/connection/error_manager.dart';
 import 'package:agile_front/infraestructure/service.dart';
 import 'package:agile_front/infraestructure/operation.dart';
 import 'dart:async';
@@ -6,7 +7,8 @@ import 'package:dart_gql/main.dart';
 export 'package:dart_gql/main.dart';
 class GraphqlConn extends Service{
   final DartGql _gql;
-  GraphqlConn({required DartGql client}) : _gql = client;
+  final ErrorConnManager _errorManager;
+  GraphqlConn({required DartGql client, required ErrorConnManager errorManager}) : _gql = client, _errorManager = errorManager;
   @override
   Future<dynamic> operation({required Operation operation, void Function(Object)? callback, Map<String, dynamic>? variables}) async{
     final queryVariables = variables ?? {};
@@ -21,9 +23,9 @@ class GraphqlConn extends Service{
       final errors = response.exception?.graphqlErrors ?? [];
       if (errors.isNotEmpty) {
         // Handle exceptions here, e.g., log them or show a message
-        return errors;
+        return _errorManager.handleGraphqlError(errors);
       }
-      return response;
+      return _errorManager.handleHttpError(response);
     }
     var data = operation.result(response.data ?? {});
     if (callback != null){
