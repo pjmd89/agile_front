@@ -109,7 +109,9 @@ void _createBaseStructure(String libRoot) {
     l10nYaml.writeAsStringSync('arb-dir: lib/l10n\ntemplate-arb-file: app_es.arb\noutput-localization-file: app_localizations.dart\n');
     print('  + Archivo creado: ${l10nYaml.path}');
   }
-  final templatePath = '$libRoot/src/core/templates/locale_notifier.dart.template';
+  // Copiar template de locale_notifier.dart.template a providers/locale_notifier.dart
+  final scriptDir = File(Platform.script.toFilePath()).parent.path;
+  final templatePath = '$scriptDir/../lib/src/core/templates/locale_notifier.dart.template';
   final targetDir = Directory('$libRoot/src/presentation/providers');
   if (!targetDir.existsSync()) {
     targetDir.createSync(recursive: true);
