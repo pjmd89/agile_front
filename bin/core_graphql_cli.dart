@@ -161,6 +161,7 @@ Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
   final operationGenerator = OperationGenerator(libRoot: libRoot);
   final useCaseGenerator = UseCaseGenerator(libRoot: libRoot);
   final pageGenerator = PageGenerator(libRoot: libRoot);
+  final routeGenerator = RouteGenerator(libRoot: libRoot);
   final gqlErrorArbGenerator = GqlErrorArbGenerator(arbRoot: '$libRoot/src/i18n');
   try {
     final schema = await introspector.fetchSchema(endpointUrl); // Map con 'types' y 'directives'
@@ -169,6 +170,7 @@ Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
     operationGenerator.generateOperationsFromSchema({'types': schema['types']});
     useCaseGenerator.generateUseCasesFromSchema(schema);
     pageGenerator.generatePagesFromSchema(schema);
+    routeGenerator.generateRoutesFromSchema(schema);
     gqlErrorArbGenerator.generateArbFromSchema(endpointUrl,schema);
     
   } catch (e) {
