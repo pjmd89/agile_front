@@ -58,10 +58,9 @@ class BuilderGenerator {
         final outFile = File(outPath);
         outFile.createSync(recursive: true);
         if(!outFile.existsSync()) {
-          
+          outFile.writeAsStringSync(buffer.toString());
+          print('  + Builder generado: $outPath');
         }
-        outFile.writeAsStringSync(buffer.toString());
-        print('  + Builder generado: $outPath');
         
         barrelBuffer.writeln("export './${className.toLowerCase()}_fields_builder.dart';");
       }
