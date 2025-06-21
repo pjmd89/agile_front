@@ -163,9 +163,10 @@ Future<void> _generateFromGraphQL(String endpointUrl, String libRoot) async {
       l10nDir.createSync(recursive: true);
     }
     final arbFile = File('${libRoot}/l10n/app_es.arb');
+    arbFile.writeAsStringSync('{}');
+    print('  + Archivo creado: ${arbFile.path}');
     if (!arbFile.existsSync()) {
-      arbFile.writeAsStringSync('{}');
-      print('  + Archivo creado: ${arbFile.path}');
+      
     }
     // Crear archivo l10n.yaml en la raíz del proyecto
     final l10nYaml = File('${libRoot}/l10n.yaml');
