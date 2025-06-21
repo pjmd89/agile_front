@@ -205,9 +205,11 @@ class ModelGenerator {
         buffer.writeln('}');
         final outPath = '$libRoot/src/domain/entities/types/${className.toLowerCase()}/${className.toLowerCase()}_model.dart';
         final outFile = File(outPath);
-        outFile.createSync(recursive: true);
-        outFile.writeAsStringSync(buffer.toString());
-        print('  + Modelo generado: $outPath');
+        if(!outFile.existsSync()) {
+          outFile.createSync(recursive: true);
+          outFile.writeAsStringSync(buffer.toString());
+          print('  + Modelo generado: $outPath');
+        }
       }
     }
     for (final type in types) {
@@ -233,9 +235,12 @@ class ModelGenerator {
         buffer.writeln('}');
         final outPath = '$libRoot/src/domain/entities/enums/${enumName.toLowerCase()}_enum.dart';
         final outFile = File(outPath);
-        outFile.createSync(recursive: true);
-        outFile.writeAsStringSync(buffer.toString());
-        print('  + Enum generado: $outPath');
+        if(!outFile.existsSync()) {
+          outFile.createSync(recursive: true);
+          outFile.writeAsStringSync(buffer.toString());
+          print('  + Enum generado: $outPath');
+        }
+        
       }
     }
     // Generar modelos para INPUT_OBJECT
@@ -494,9 +499,12 @@ class ModelGenerator {
         buffer.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
         buffer.writeln('}');
         final outFile = File(inputOutPath);
-        outFile.createSync(recursive: true);
-        outFile.writeAsStringSync(buffer.toString());
-        print('  + Input generado: $inputOutPath');
+        if(!outFile.existsSync()) {
+          outFile.createSync(recursive: true);
+          outFile.writeAsStringSync(buffer.toString());
+          print('  + Input generado: $inputOutPath');
+        }
+        
       }
     }
     // --- Generar main.dart (barrel file) para entidades ---
@@ -523,8 +531,10 @@ class ModelGenerator {
         }
       }
       final mainFile = File('${entitiesDir.path}/main.dart');
-      mainFile.writeAsStringSync(buffer.toString());
-      print('  + Barrel generado: ${mainFile.path}');
+      if (!mainFile.existsSync()) {
+        mainFile.writeAsStringSync(buffer.toString());
+        print('  + Barrel generado: ${mainFile.path}');
+      }
     }
   }
 
@@ -534,100 +544,6 @@ class ModelGenerator {
     generateModelsFromTypes(types);
     //_generateDirectivesData(directives);
   }
-  /*
-  void _generateDirectivesData(List directives) {
-    final dir = Directory('$libRoot/src/domain/entities/directives');
-    dir.createSync(recursive: true);
-    if (directives.isEmpty) {
-      print('No se encontraron directivas en el esquema.');
-      // Aún así, crear barrel mínimo
-      final barrel = File('${dir.path}/main.dart');
-      barrel.writeAsStringSync('// No hay directivas en el esquema.\n');
-      print('  + Barrel de directivas actualizado: \\${barrel.path}');
-      return;
-    }
-    final exportFiles = <String>[];
-    for (final d in directives) {
-      final rawName = d['name'].toString();
-      final folderName = rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_').toLowerCase();
-      final className = _toPascalCase(rawName.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_')) + 'Args';
-      final fileName = '${folderName}_args.dart';
-      final subDir = Directory('${dir.path}/$folderName');
-      subDir.createSync(recursive: true);
-      final buffer = StringBuffer();
-      buffer.writeln('// GENERATED FILE. NO EDITAR MANUALMENTE.');
-      buffer.writeln('class $className {');
-      final args = d['args'] ?? [];
-      if (args.isEmpty) {
-        buffer.writeln('  const $className();');
-        buffer.writeln('  factory $className.fromJson(Map<String, dynamic> _) => const $className();');
-        buffer.writeln('  Map<String, dynamic> toJson() => {};');
-      } else {
-        // Campos
-        for (final arg in args) {
-          final argName = arg['name'];
-          final dartField = _isReserved(argName) ? '${argName}_' : argName;
-          final type = arg['type'] as Map?;
-          final dartType = _mapGraphQLTypeToDart(type);
-          buffer.writeln('  final $dartType $dartField;');
-        }
-        // Constructor
-        buffer.write('  const $className({');
-        buffer.write(args.map((arg) {
-          final argName = arg['name'];
-          final dartField = _isReserved(argName) ? '${argName}_' : argName;
-          return 'this.$dartField';
-        }).join(', '));
-        buffer.writeln('});');
-        // fromJson
-        buffer.writeln('  factory $className.fromJson(Map<String, dynamic> json) => $className(');
-        for (final arg in args) {
-          final argName = arg['name'];
-          final dartField = _isReserved(argName) ? '${argName}_' : argName;
-          final type = arg['type'] as Map?;
-          final dartType = _mapGraphQLTypeToDart(type);
-          if (dartType.startsWith('List<')) {
-            buffer.writeln('    $dartField: (json["$argName"] as List?)?.cast(),');
-          } else if (dartType == 'bool?' || dartType == 'bool') {
-            buffer.writeln('    $dartField: json["$argName"] == null ? null : json["$argName"] as bool,');
-          } else if (dartType == 'num?' || dartType == 'num') {
-            buffer.writeln('    $dartField: json["$argName"] == null ? null : (json["$argName"] as num),');
-          } else {
-            buffer.writeln('    $dartField: json["$argName"] as $dartType,');
-          }
-        }
-        buffer.writeln('  );');
-        // toJson
-        buffer.writeln('  Map<String, dynamic> toJson() => {');
-        for (final arg in args) {
-          final argName = arg['name'];
-          final dartField = _isReserved(argName) ? '${argName}_' : argName;
-          buffer.writeln('    "$argName": $dartField,');
-        }
-        buffer.writeln('  };');
-      }
-      buffer.writeln('}');
-      final outFile = File('${subDir.path}/$fileName');
-      outFile.writeAsStringSync(buffer.toString());
-      exportFiles.add('$folderName/$fileName');
-      print('  + Argumentos de directiva generados: \\${outFile.path}');
-    }
-    // Actualizar barrel file
-    final barrel = File('${dir.path}/main.dart');
-    final buffer = StringBuffer();
-    for (final file in exportFiles) {
-      buffer.writeln("export './$file';");
-    }
-    barrel.writeAsStringSync(buffer.toString());
-    print('  + Barrel de directivas actualizado: \\${barrel.path}');
-  }
-  
-  String _toPascalCase(String input) {
-    if (input.isEmpty) return input;
-    final parts = input.split('_');
-    return parts.map((e) => e.isNotEmpty ? e[0].toUpperCase() + e.substring(1).toLowerCase() : '').join();
-  }
-  */
 }
 
 // Función auxiliar para extraer el nombre de tipo personalizado
