@@ -11,6 +11,9 @@ import '../lib/src/core/operation_generator.dart';
 import '../lib/src/core/builder_generator.dart';
 import '../lib/src/core/templates/locale_notifier.dart';
 import '../lib/src/core/templates/gql_notifier.dart';
+import '../lib/src/core/templates/app_en.arb.dart';
+import '../lib/src/core/templates/app_es.arb.dart';
+import '../lib/src/core/templates/l10n.yaml.dart';
 
 void main(List<String> arguments) async {
   final parser =
@@ -96,9 +99,9 @@ void _createBaseStructure(String libRoot) {
   
   
   var files = {
-    '${libRoot}/l10n/app_es.arb': '{"languageEnglish":"Inglés","languageSpanish":"Español"}',
-    '${libRoot}/l10n/app_en.arb': '{"languageEnglish":"English","languageSpanish":"Spanish"}',
-    'l10n.yaml': 'arb-dir: lib/l10n\ntemplate-arb-file: app_es.arb\noutput-localization-file: app_localizations.dart\n',
+    '${libRoot}/l10n/app_es.arb': appEsArb,
+    '${libRoot}/l10n/app_en.arb': appEnArb,
+    'l10n.yaml': appL10n,
     '${libRoot}/src/presentation/providers/gql_notifier.dart': appGqlNotifier,
     '${libRoot}/src/presentation/providers/locale_notifier.dart': appLocaleNotifier,
   };
