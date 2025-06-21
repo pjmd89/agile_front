@@ -142,7 +142,7 @@ void _createBaseStructure(String libRoot) {
     '${libRoot}/src/presentation/core/templates/basic/main.dart': basicTemplate,
     '${libRoot}/src/presentation/widgets/loading/main.dart': loadingWidget,
     '${libRoot}/main.dart': mainFlutter,
-    '${libRoot}/pubspec.yaml.example': pubSpec,
+    'pubspec.yaml.example': pubSpec,
     
   };
 
