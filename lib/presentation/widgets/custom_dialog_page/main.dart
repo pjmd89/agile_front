@@ -5,16 +5,18 @@ CustomTransitionPage CustomDialogPage({
   required BuildContext context,
   required GoRouterState state,
   required Widget child,
+  int transitionDuration = 400,
+  double width = 600,
 }){
   return CustomTransitionPage(
     key: state.pageKey,
     opaque: false,
-    transitionDuration: const Duration(milliseconds: 400),
+    transitionDuration: Duration(milliseconds: transitionDuration),
     child: Center(
       child: Material(
         color: Colors.transparent,
         child: SizedBox(
-          width: 600,
+          width: width,
           child: child,
         ),
       ),
