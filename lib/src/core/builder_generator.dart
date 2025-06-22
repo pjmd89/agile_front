@@ -1,4 +1,9 @@
 import 'dart:io';
+/// Clase auxiliar para directivas GraphQL
+
+
+/// Representa una variable GraphQL
+
 
 class BuilderGenerator {
   final String libRoot;
@@ -16,7 +21,6 @@ class BuilderGenerator {
         final fields = type['fields'] ?? [];
         final buffer = StringBuffer();
         buffer.writeln('// GENERATED. NO EDITAR MANUALMENTE.');
-        // Revisar si realmente necesita importar main.dart (solo si hay al menos un campo tipo OBJECT)
         bool needsMainImport = false;
         for (final field in fields) {
           dynamic t = field['type'];
@@ -28,6 +32,8 @@ class BuilderGenerator {
             break;
           }
         }
+        buffer.writeln("import 'dart:core';");
+        buffer.writeln("import 'package:agile_front/infraestructure/graphql/helpers.dart';");
         if (needsMainImport) {
           buffer.writeln("import 'main.dart';");
         }
@@ -42,14 +48,19 @@ class BuilderGenerator {
           }
           if (t is Map && t['kind'] == 'OBJECT') {
             final typeName = t['name'];
-            buffer.writeln('  ${className}FieldsBuilder $dartField(void Function(${typeName}FieldsBuilder) builder) {');
+            buffer.writeln('  ${className}FieldsBuilder $dartField({String? alias, Map<String, dynamic>? args, List<Directive>? directives, void Function(${typeName}FieldsBuilder)? builder}) {');
             buffer.writeln('    final child = ${typeName}FieldsBuilder();');
-            buffer.writeln('    builder(child);');
-            buffer.writeln('    _fields.add("$fieldName { \${child.build()} }");');
+            buffer.writeln('    if (builder != null) builder(child);');
+            buffer.writeln('    final fieldStr = formatField("$fieldName", alias: alias, args: args, directives: directives, selection: child.build());');
+            buffer.writeln('    _fields.add(fieldStr);');
             buffer.writeln('    return this;');
             buffer.writeln('  }');
           } else {
-            buffer.writeln('  ${className}FieldsBuilder $dartField() { _fields.add("$fieldName"); return this; }');
+            buffer.writeln('  ${className}FieldsBuilder $dartField({String? alias, Map<String, dynamic>? args, List<Directive>? directives}) {');
+            buffer.writeln('    final fieldStr = formatField("$fieldName", alias: alias, args: args, directives: directives);');
+            buffer.writeln('    _fields.add(fieldStr);');
+            buffer.writeln('    return this;');
+            buffer.writeln('  }');
           }
         }
         buffer.writeln('  String build() => _fields.join(" ");');
@@ -61,19 +72,14 @@ class BuilderGenerator {
           outFile.writeAsStringSync(buffer.toString());
           print('  + Builder generado: $outPath');
         }
-        
         barrelBuffer.writeln("export './${className.toLowerCase()}_fields_builder.dart';");
       }
     }
-    // Actualizar barrel file
     final barrelFile = File('$outDir/fields_builders.dart');
     if(!barrelFile.existsSync()){
       barrelFile.writeAsStringSync(barrelBuffer.toString());
       print('  + Barrel actualizado: $outDir/fields_builders.dart');
     }
-    
-
-    // --- Generar main.dart (barrel file) para builders ---
     final mainBuffer = StringBuffer();
     mainBuffer.writeln('// GENERATED BARREL FILE. NO EDITAR MANUALMENTE.');
     mainBuffer.writeln('// Exporta todos los builders de selección de campos GraphQL\n');
@@ -109,3 +115,5 @@ class BuilderGenerator {
     return name;
   }
 }
+
+
