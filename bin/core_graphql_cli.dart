@@ -3,6 +3,9 @@
 
 import 'package:agile_front/src/core/gql_error_arb_generator_http.dart';
 import 'package:agile_front/src/core/usecase_generator.dart';
+import 'package:agile_front/src/core/route_generator.dart';
+import 'package:agile_front/src/core/main_routes_generator.dart';
+import 'package:agile_front/src/core/page_generator.dart';
 import 'package:args/args.dart';
 import 'dart:io';
 import '../lib/src/core/graphql_introspection_service.dart';
