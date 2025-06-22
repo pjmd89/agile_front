@@ -16,7 +16,7 @@ EnvEnum envEnumSet(String envString) {
     case "stag":
       return EnvEnum.stag;
   }
-  throw ArgumentError('Invalid env string: $envString');
+  return EnvEnum.prod; 
 }
 
 String envEnumGet(EnvEnum envEnum) {
