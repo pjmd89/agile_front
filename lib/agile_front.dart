@@ -4,5 +4,6 @@ export 'package:agile_front/infraestructure/operation.dart';
 export 'package:agile_front/infraestructure/usecase.dart';
 export 'package:provider/provider.dart';
 export 'package:agile_front/presentation/widgets/custom_slide_transition/main.dart';
+export 'package:agile_front/presentation/widgets/custom_dialog_page/main.dart';
 export 'package:agile_front/infraestructure/env_enum.dart';
 export 'package:agile_front/infraestructure/connection/error_manager.dart';
