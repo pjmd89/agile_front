@@ -29,7 +29,7 @@ class MainRoutesGenerator {
     final mainFile = File('${outDir.path}/main.dart');
     final buffer = StringBuffer();
     buffer.writeln("import 'package:go_router/go_router.dart';");
-    buffer.writeln("import 'package:agile_front/src/presentation/core/templates/basic/main.dart';");
+    buffer.writeln("import '/src/presentation/core/templates/basic/main.dart';");
     // Imports de cada archivo de rutas
     for (final type in usecaseTypes) {
       final name = type['name'] as String;
