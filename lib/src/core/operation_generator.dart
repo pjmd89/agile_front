@@ -205,7 +205,7 @@ $fieldsStr
     ${builderUsage.isNotEmpty ? builderUsage : ''}
     // Construir declaración de variables GraphQL
     final variableDecl = <String>[];
-\${args.map((arg) => "    variableDecl.add('\${arg['name']}: \${_gqlTypeString(arg['type'])}');").join('\n')}
+${args.map((arg) => "    variableDecl.add('${arg['name']}: ${_gqlTypeString(arg['type'])}');").join('\n')}
     final variablesStr = variableDecl.isNotEmpty ? '(\${variableDecl.join(', ')})' : '';
     final body = formatField(
       _name,
