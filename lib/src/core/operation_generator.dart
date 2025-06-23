@@ -147,6 +147,7 @@ class OperationGenerator {
       gqlArgsMap[argName] = '\$argName';
     }
     // Alias, args y directivas opcionales
+    fields.add('  final String _name = \'$name\';');
     fields.add('  final String? alias;');
     params.add('this.alias');
     fields.add('  final Map<String, dynamic>? opArgs;');
@@ -195,7 +196,7 @@ class OperationGenerator {
     return """
 ${importBuilder}${importModels}${importOperation}${importHelper}class $className implements Operation{
 $fieldsStr
-  final String _name = '$name';
+
   @override
   get name => _name;
   $className({$paramsStr});
