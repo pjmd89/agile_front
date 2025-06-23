@@ -43,6 +43,11 @@ Generador de código Clean Architecture para Dart/Flutter basado en introspecci�
 
 4. **Ejecuta `flutter pub get` para descargar las dependencias.**
 
+4.1. **Actualiza el paquete agile_front para asegurarte de tener la última versión:**
+   ```bash
+   dart pub upgrade agile_front
+   ```
+
 5. **Genera el código por primera vez:**
    ```bash
    dart run agile_front:core_graphql_cli init
@@ -65,7 +70,7 @@ Generador de código Clean Architecture para Dart/Flutter basado en introspecci�
   ```
 - Generar código a partir de un endpoint GraphQL:
   ```bash
-  dart run agile_front:core_graphql_cli generate http://localhost:8081
+  dart run agile_front:core_graphql_cli generate ${ENDPOINT}
   ```
 
 ## ¿Qué es la variable ENDPOINT?
@@ -203,4 +208,5 @@ args: {'status': GqlEnum('ACTIVE')} // status: ACTIVE
 Estas clases permiten construir queries y mutations seguras, tipadas y compatibles con GraphQL real, evitando errores de formato y facilitando la generación automática de código.
 
 ## Licencia
-MIT''';
+MIT
+''';
