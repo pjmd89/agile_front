@@ -176,10 +176,10 @@ class OperationGenerator {
     String resultMethod;
     if (returnTypeName != null) {
       resultMethod = '''
-  final String _name = '$name';
   @override
   $returnTypeName result(Map<String, dynamic> data) {
-    if name = (alias != null) alias ?? _name;
+    String name;
+    name = alias ?? _name;
     return $returnTypeName.fromJson(data[name]);
   }
 ''';
@@ -195,12 +195,10 @@ class OperationGenerator {
     return """
 ${importBuilder}${importModels}${importOperation}${importHelper}class $className implements Operation{
 $fieldsStr
-
-  $className({$paramsStr});
-
+  final String _name = '$name';
   @override
   get name => _name;
-
+  $className({$paramsStr});
   @override
   String build({String? alias, Map<String, dynamic>? args, List<Directive>? directives}) {
     ${builderUsage.isNotEmpty ? builderUsage : ''}
@@ -216,10 +214,10 @@ ${args.map((arg) => "    variableDecl.add('${arg['name']}: ${_gqlTypeString(arg[
       selection: ${builderType != null ? 'fields' : 'null'},
     );
     return '''
-$operationType _name\$variablesStr {
-  \$body
-}
-''';
+      $operationType _name\$variablesStr {
+        \$body
+      }
+    ''';
   }
 $resultMethod
 }
