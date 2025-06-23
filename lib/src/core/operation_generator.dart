@@ -221,14 +221,6 @@ $operationType _name\$variablesStr {
 }
 ''';
   }
-
-Map<String, dynamic> getVariables() {
-    final map = <String, dynamic>{};
-    if (alias != null) alias ?? = _name;
-${args.map((arg) => "    if ($arg['name'] != null) map['${arg['name']}'] = ${arg['name']};").join('\n')}
-    return map;
-  }
-
 $resultMethod
 }
 """;
