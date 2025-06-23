@@ -215,7 +215,7 @@ ${args.map((arg) => "    variableDecl.add('${arg['name']}: ${_gqlTypeString(arg[
       selection: ${builderType != null ? 'fields' : 'null'},
     );
     return '''
-      $operationType _name\$variablesStr {
+      $operationType \$_name\$variablesStr {
         \$body
       }
     ''';
