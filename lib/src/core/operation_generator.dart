@@ -176,9 +176,11 @@ class OperationGenerator {
     String resultMethod;
     if (returnTypeName != null) {
       resultMethod = '''
+  final String _name = '$name';
   @override
   $returnTypeName result(Map<String, dynamic> data) {
-    return $returnTypeName.fromJson(data['\$_name']);
+    if name = (alias != null) alias ?? _name;
+    return $returnTypeName.fromJson(data[name]);
   }
 ''';
     } else {
@@ -195,7 +197,6 @@ ${importBuilder}${importModels}${importOperation}${importHelper}class $className
 $fieldsStr
 
   $className({$paramsStr});
-  final String _name = '$name';
 
   @override
   get name => _name;
@@ -223,6 +224,7 @@ $operationType _name\$variablesStr {
 
 Map<String, dynamic> getVariables() {
     final map = <String, dynamic>{};
+    if (alias != null) alias ?? = _name;
 ${args.map((arg) => "    if ($arg['name'] != null) map['${arg['name']}'] = ${arg['name']};").join('\n')}
     return map;
   }
