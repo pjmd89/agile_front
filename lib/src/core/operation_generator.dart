@@ -148,6 +148,7 @@ class OperationGenerator {
     }
     // Alias, args y directivas opcionales
     fields.add('  final String _name = \'$name\';');
+    fields.add('  final Map<String,String> declarativeArgs;');
     fields.add('  final String? alias;');
     params.add('this.alias');
     fields.add('  final Map<String, dynamic>? opArgs;');
@@ -201,12 +202,12 @@ $fieldsStr
   get name => _name;
   $className({$paramsStr});
   @override
-  String build({String? alias, Map<String, dynamic>? args, List<Directive>? directives}) {
+  String build({String? alias, Map<String, String>? declarativeArgs,Map<String, dynamic>? args, List<Directive>? directives}) {
     ${builderUsage.isNotEmpty ? builderUsage : ''}
     // Construir declaración de variables GraphQL
-    final variableDecl = <String>[];
-${args.map((arg) => "    variableDecl.add('${arg['name']}: ${_gqlTypeString(arg['type'])}');").join('\n')}
-    final variablesStr = variableDecl.isNotEmpty ? '(\${variableDecl.join(', ')})' : '';
+    final variableDecl = declarativeArgs ?? this.opArgs ?? {};
+    final variablesStr = variableDecl.isNotEmpty ? '(\${variableDecl.entries.map((e) => '\${e.key}:\${e.value}').join(',')})' : ''; 
+    
     final body = formatField(
       _name,
       alias: alias ?? this.alias,
@@ -223,17 +224,6 @@ ${args.map((arg) => "    variableDecl.add('${arg['name']}: ${_gqlTypeString(arg[
 $resultMethod
 }
 """;
-  }
-
-  String _gqlTypeString(Map type) {
-    // Recursivo: arma el string de tipo GraphQL (ej: String!, [Int], CustomInput!)
-    if (type['kind'] == 'NON_NULL') {
-      return _gqlTypeString(type['ofType']) + '!';
-    } else if (type['kind'] == 'LIST') {
-      return '[' + _gqlTypeString(type['ofType']) + ']';
-    } else {
-      return type['name'] ?? 'String';
-    }
   }
 
   String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
