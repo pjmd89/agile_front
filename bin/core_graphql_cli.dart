@@ -33,6 +33,7 @@ import '../lib/src/core/templates/vscode/launch.json.dart';
 import '../lib/src/core/templates/widgets/loading.dart';
 import '../lib/src/core/templates/templates/basic_template.dart';
 import '../lib/src/core/templates/error/error_manager.dart';
+import '../lib/src/core/templates/readme.md.dart';
 
 
 void main(List<String> arguments) async {
@@ -154,6 +155,7 @@ void _createBaseStructure(String libRoot, bool isBack) {
     '${libRoot}/src/infraestructure/error/error_manager.dart': errorTemplate,
     '${libRoot}/main.dart': mainFlutter,
     'pubspec.yaml.example': pubSpec,
+    'readme_agile_front.md': readme,
     
   };
   
