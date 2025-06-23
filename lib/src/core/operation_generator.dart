@@ -148,8 +148,9 @@ class OperationGenerator {
     }
     // Alias, args y directivas opcionales
     fields.add('  final String _name = \'$name\';');
-    fields.add('  final Map<String,String> declarativeArgs;');
+    fields.add('  final Map<String,String>? declarativeArgs;');
     fields.add('  final String? alias;');
+    params.add('this.declarativeArgs');
     params.add('this.alias');
     fields.add('  final Map<String, dynamic>? opArgs;');
     params.add('this.opArgs');
@@ -202,10 +203,10 @@ $fieldsStr
   get name => _name;
   $className({$paramsStr});
   @override
-  String build({String? alias, Map<String, String>? declarativeArgs,Map<String, dynamic>? args, List<Directive>? directives}) {
+  String build({String? alias, Map<String, String>? declarativeArgs, Map<String, dynamic>? args, List<Directive>? directives}) {
     ${builderUsage.isNotEmpty ? builderUsage : ''}
     // Construir declaración de variables GraphQL
-    final variableDecl = declarativeArgs ?? this.opArgs ?? {};
+    final variableDecl = declarativeArgs ?? this.declarativeArgs ?? {};
     final variablesStr = variableDecl.isNotEmpty ? '(\${variableDecl.entries.map((e) => '\${e.key}:\${e.value}').join(',')})' : ''; 
     
     final body = formatField(
