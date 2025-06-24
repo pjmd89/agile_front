@@ -381,6 +381,7 @@ class ModelGenerator {
           if (_isReserved(dartField)) {
             dartField = '${dartField}_';
           }
+          /*
           // Determinar si la asignación será directa o con valor por defecto
           bool isNullable = true;
           dynamic t = field['type'];
@@ -388,6 +389,7 @@ class ModelGenerator {
             isNullable = false;
             t = t['ofType'];
           }
+          
           // Determinar si la asignación será directa (sin ??) o con valor por defecto
           String defaultValue;
           if (t is Map) {
@@ -424,21 +426,14 @@ class ModelGenerator {
           } else {
             defaultValue = 'null';
           }
+          */
           // Si la asignación será directa (this.campo = campo;), el parámetro es required y no-nullable
-          if (defaultValue == 'null') {
-            String dartType = _mapGraphQLTypeToDart(field['type']);
-            if (dartType.endsWith('?')) {
-              dartType = dartType.substring(0, dartType.length - 1);
-            }
-            buffer.writeln('    required $dartType $dartField,');
-          } else {
-            // El parámetro debe ser nullable (con ?), sin required
-            String dartType = _mapGraphQLTypeToDart(field['type']);
-            if (!dartType.endsWith('?')) {
-              dartType = dartType + '?';
-            }
-            buffer.writeln('    $dartType $dartField,');
+          // Todos los parámetros serán nullable y sin required
+          String dartType = _mapGraphQLTypeToDart(field['type']);
+          if (!dartType.endsWith('?')) {
+            dartType = dartType + '?';
           }
+          buffer.writeln('    $dartType $dartField,');
         }
         buffer.writeln('  }) {');
         for (final field in fields) {
