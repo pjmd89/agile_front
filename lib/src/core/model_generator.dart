@@ -426,14 +426,33 @@ class ModelGenerator {
           } else {
             defaultValue = 'null';
           }
-          */
+          
           // Si la asignación será directa (this.campo = campo;), el parámetro es required y no-nullable
           // Todos los parámetros serán nullable y sin required
+          //----------------------
+          if (defaultValue == 'null') {
+            String dartType = _mapGraphQLTypeToDart(field['type']);
+            if (dartType.endsWith('?')) {
+              dartType = dartType.substring(0, dartType.length - 1);
+            }
+            buffer.writeln('    required $dartType $dartField,');
+          } else {
+            // El parámetro debe ser nullable (con ?), sin required
+            String dartType = _mapGraphQLTypeToDart(field['type']);
+            if (!dartType.endsWith('?')) {
+              dartType = dartType + '?';
+            }
+            buffer.writeln('    $dartType $dartField,');
+          }
+          //----------------------
+          */
+          //----------------------
           String dartType = _mapGraphQLTypeToDart(field['type']);
           if (!dartType.endsWith('?')) {
             dartType = dartType + '?';
           }
           buffer.writeln('    $dartType $dartField,');
+          //-----------------------
         }
         buffer.writeln('  }) {');
         for (final field in fields) {
