@@ -37,6 +37,7 @@ class UseCaseGenerator {
         final file = File('${outDir.path}/$fileName');
         if (!file.existsSync()) {
           file.writeAsStringSync('''
+import 'dart:async';
 import 'package:agile_front/agile_front.dart' as af;
 import '/src/domain/entities/main.dart';
 
@@ -51,7 +52,7 @@ class $className implements af.UseCase {
       _conn = conn;
 
   @override
-  build() {
+  Future<dynamic>build() async {
     _conn.operation(operation: _operation, callback: callback);
   }
   callback(Object ob) {

@@ -113,7 +113,7 @@ class ModelGenerator {
         }
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_model.g.dart";');
-        buffer.writeln('@JsonSerializable()');
+        buffer.writeln('@JsonSerializable(includeIfNull: false)');
         buffer.writeln('class $className {');
         for (final field in fields) {
           final fieldName = field['name'];
@@ -303,7 +303,7 @@ class ModelGenerator {
         buffer.writeln('import "package:flutter/foundation.dart";');
         buffer.writeln('import "package:json_annotation/json_annotation.dart";');
         buffer.writeln('part "${className.toLowerCase()}_input.g.dart";');
-        buffer.writeln('@JsonSerializable()');
+        buffer.writeln('@JsonSerializable(includeIfNull: false)');
         buffer.writeln('class $className extends ChangeNotifier {');
         for (final field in fields) {
           final fieldName = field['name'];
