@@ -312,9 +312,6 @@ class ModelGenerator {
             dartField = '${dartField}_';
             buffer.writeln('  // "$fieldName" es palabra reservada, renombrado a "$dartField"');
           }
-          if (fieldName != dartField) {
-            buffer.writeln('  @JsonKey(name: "$fieldName")');
-          }
           // Determinar tipo y valor por defecto
           String dartType;
           String? fieldInitializer = '';
@@ -368,6 +365,9 @@ class ModelGenerator {
             dartType = 'String?';
           }
           buffer.writeln('  $dartType _${dartField}${fieldInitializer};');
+          if (fieldName != dartField) {
+            buffer.writeln('  @JsonKey(name: "$fieldName")');
+          }
           buffer.writeln('  $dartType get $dartField => _${dartField};');
           buffer.writeln('  set $dartField($dartType value) {');
           buffer.writeln('    _${dartField} = value;');
