@@ -39,7 +39,6 @@ class UseCaseGenerator {
           file.writeAsStringSync('''
 import 'dart:async';
 import 'package:agile_front/agile_front.dart' as af;
-import '/src/domain/entities/main.dart';
 
 
 class $className implements af.UseCase {
