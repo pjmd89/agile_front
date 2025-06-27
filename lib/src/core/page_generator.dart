@@ -86,7 +86,7 @@ import '/src/presentation/providers/gql_notifier.dart';
 class ViewModel extends ChangeNotifier {
   bool _loading = true;
   bool _error = false;
-  final GqlConn _gqlConn;
+  late GqlConn _gqlConn;
   final BuildContext _context;
   bool get loading => _loading;
   bool get error => _error;
@@ -101,10 +101,13 @@ class ViewModel extends ChangeNotifier {
   }
   ViewModel(
     {required BuildContext context}
-  ) : _context = context,
-      _gqlConn = context.read<GQLNotifier>().gqlConn;
+  ) : _context = context{
+    _gqlConn = _context.read<GQLNotifier>().gqlConn;
+  }
 
-  
+  $crud(Operation operation) async{
+    _gqlConn.operation(operation: operation);
+  }
 }
 ''');
           print('      + Archivo generado: \\${viewModelFile.path}');
