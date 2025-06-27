@@ -10,7 +10,7 @@ class ModelGenerator {
     'in', 'is', 'new', 'null', 'rethrow', 'return', 'super', 'switch', 'this',
     'throw', 'true', 'try', 'var', 'void', 'while', 'with', 'abstract', 'as',
     'covariant', 'deferred', 'dynamic', 'export', 'external', 'factory', 'Function',
-    'get', 'implements', 'import', 'interface', 'late', 'library', 'mixin', 'operator',
+    'get', 'implements', 'import', 'interface', 'late', 'library', 'mixin',
     'part', 'required', 'set', 'static', 'typedef', 'await', 'yield'
   ];
 
