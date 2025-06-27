@@ -152,9 +152,9 @@ class OperationGenerator {
     fields.add('  final String? alias;');
     params.add('this.declarativeArgs');
     params.add('this.alias');
-    fields.add('  final Map<String, dynamic>? opArgs;');
+    fields.add('  Map<String, dynamic>? opArgs;');
     params.add('this.opArgs');
-    fields.add('  final List<Directive>? directives;');
+    fields.add('  List<Directive>? directives;');
     params.add('this.directives');
     // Agregar el builder como parámetro obligatorio si hay tipo de retorno objeto
     String builderField = '';
