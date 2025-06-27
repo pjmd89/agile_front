@@ -148,7 +148,7 @@ class OperationGenerator {
     }
     // Alias, args y directivas opcionales
     fields.add('  final String _name = \'$name\';');
-    fields.add('  final Map<String,String>? declarativeArgs;');
+    fields.add('  Map<String,String>? declarativeArgs;');
     fields.add('  final String? alias;');
     params.add('this.declarativeArgs');
     params.add('this.alias');
